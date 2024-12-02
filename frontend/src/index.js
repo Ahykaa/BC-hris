@@ -1,16 +1,18 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter as Router } from "react-router-dom";
-import App from "./App";
-import reportWebVitals from "./reportWebVitals";
+import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router-dom";
+import App from "App";
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+// Material Dashboard 2 React Context Provider
+import { MaterialUIControllerProvider } from "context";
+
+const container = document.getElementById("app");
+const root = createRoot(container);
+
 root.render(
-  <React.StrictMode>
-    <Router>
+  <BrowserRouter>
+    <MaterialUIControllerProvider>
       <App />
-    </Router>
-  </React.StrictMode>
+    </MaterialUIControllerProvider>
+  </BrowserRouter>
 );
-
-reportWebVitals();
