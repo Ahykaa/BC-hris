@@ -8,6 +8,7 @@ import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 
 import Icon from "@mui/material/Icon";
+import Leave from "layouts/leave";
 
 const routes = [
   {
@@ -29,10 +30,10 @@ const routes = [
   {
     type: "collapse",
     name: "Leave Request",
-    key: "billing",
+    key: "Leave",
     icon: <Icon fontSize="small">edit_note</Icon>,
-    route: "/billing",
-    component: <Billing />,
+    route: "/leave",
+    component: <Leave />,
   },
   {
     type: "collapse",
