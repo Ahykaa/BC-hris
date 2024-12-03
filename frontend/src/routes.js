@@ -3,12 +3,12 @@ import Tables from "layouts/tables";
 import Billing from "layouts/billing";
 import RTL from "layouts/rtl";
 import Notifications from "layouts/notifications";
-import Profile from "layouts/profile";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 
 import Icon from "@mui/material/Icon";
 import Leave from "layouts/leave";
+import ProfileInfo from "layouts/profileInfo";
 
 const routes = [
   {
@@ -22,10 +22,10 @@ const routes = [
   {
     type: "collapse",
     name: "Profile",
-    key: "tables",
+    key: "profileInfo",
     icon: <Icon fontSize="small">account_circle</Icon>,
-    route: "/tables",
-    component: <Tables />,
+    route: "/profileInfo",
+    component: <ProfileInfo />,
   },
   {
     type: "collapse",
