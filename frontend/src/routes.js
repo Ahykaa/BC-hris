@@ -8,6 +8,7 @@ import SignUp from "layouts/authentication/sign-up";
 
 import Icon from "@mui/material/Icon";
 import Leave from "layouts/leave";
+import Document from "layouts/document";
 import ProfileInfo from "layouts/profileInfo";
 
 const routes = [
@@ -38,10 +39,10 @@ const routes = [
   {
     type: "collapse",
     name: "Document Request",
-    key: "rtl",
+    key: "Document",
     icon: <Icon fontSize="small">description</Icon>,
-    route: "/rtl",
-    component: <RTL />,
+    route: "/document",
+    component: <Document />,
   },
   {
     type: "collapse",
