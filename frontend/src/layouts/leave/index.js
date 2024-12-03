@@ -8,20 +8,27 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDButton from "components/MDButton"; // Importing MDButton for Submit and Cancel
+import MDAlert from "components/MDAlert"; // Importing MDAlert for the success message
 
 // BCHRIS React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 import { useState, useEffect } from "react";
+import axiosInstance from "services/axiosInstance";
+import { useNavigate } from "react-router-dom"; // Changed to useNavigate
 
 function Leave() {
   const [reason, setReason] = useState("");
-  const [otherReason, setOtherReason] = useState("");
+  const [reasonForLeave, setReasonForLeave] = useState("");
+  const [specificReason, setSpecificReason] = useState(""); // State for specific reason when 'Others' is selected
   const [dateOfApplication, setDateOfApplication] = useState("");
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [numberOfDays, setNumberOfDays] = useState(0);
+  const [alertVisible, setAlertVisible] = useState(false); // State for managing the alert visibility
+
+  const navigate = useNavigate(); // Updated to useNavigate
 
   // Automatically set today's date for "Date of Application"
   useEffect(() => {
@@ -32,13 +39,18 @@ function Leave() {
 
   const handleReasonChange = (event) => {
     setReason(event.target.value);
+    // Reset the specific reason if nature of leave is changed to something other than 'Others'
     if (event.target.value !== "Others") {
-      setOtherReason(""); // Reset other reason when a predefined option is selected
+      setSpecificReason("");
     }
   };
 
-  const handleOtherReasonChange = (event) => {
-    setOtherReason(event.target.value);
+  const handleSpecificReasonChange = (event) => {
+    setSpecificReason(event.target.value);
+  };
+
+  const handleReasonForLeaveChange = (event) => {
+    setReasonForLeave(event.target.value);
   };
 
   // Function to calculate the number of weekdays (excluding weekends) between two dates
@@ -84,14 +96,47 @@ function Leave() {
     }
   };
 
-  const handleSubmit = () => {
-    // Logic for form submission (e.g., API call)
-    alert("Leave request submitted!");
+  const handleSubmit = async () => {
+    try {
+      // Prepare data to send to the backend
+      const leaveData = {
+        leavetype: reason,
+        reasonforleave: reasonForLeave, // Store the specific reason provided by the user
+        numberofdays: numberOfDays,
+        dateofleavefrom: fromDate,
+        dateofleaveto: toDate,
+        others: reason === "Others" ? specificReason : "", // Save specific reason only if 'Others' is selected
+      };
+
+      // Send data using axios to the backend
+      const response = await axiosInstance.post("/leave", leaveData);
+
+      // Handle successful submission
+      setAlertVisible(true); // Show the alert
+      console.log(response.data); // Log response for debugging
+
+      // Optionally, clear the form fields after submission
+      setReason("");
+      setReasonForLeave("");
+      setSpecificReason(""); // Clear specific reason field
+      setFromDate("");
+      setToDate("");
+      setNumberOfDays(0);
+
+      // Set a delay of 3 seconds before redirecting
+      setTimeout(() => {
+        navigate("/dashboard"); // Redirect to dashboard after delay
+      }, 2000);
+    } catch (error) {
+      // Handle errors (e.g., network issues, validation errors)
+      console.error("Error submitting leave request:", error);
+      alert("Failed to submit leave request.");
+    }
   };
 
   const handleCancel = () => {
-    // Logic for canceling the form (e.g., clearing the form)
-    alert("Leave request canceled!");
+    // Redirect to the dashboard when cancel is clicked
+    navigate("/dashboard");
   };
 
   return (
@@ -101,6 +146,13 @@ function Leave() {
         <Grid container spacing={6}>
           <Grid item xs={12}>
             <Card>
+              {/* Alert for Successful Submission (moved to the top) */}
+              {alertVisible && (
+                <MDAlert color="success" sx={{ fontSize: "0.8rem", padding: "8px" }}>
+                  Leave request submitted successfully!
+                </MDAlert>
+              )}
+
               <MDBox
                 mx={2}
                 mt={-3}
@@ -115,132 +167,152 @@ function Leave() {
                   Leave Requests
                 </MDTypography>
               </MDBox>
+
               <MDBox p={3}>
-                <Grid container spacing={3}>
-                  {/* Column 1 */}
-                  <Grid item xs={12} md={6}>
-                    <MDBox mb={3}>
-                      <MDTypography variant="caption" fontWeight="medium" color="text">
-                        Date of Application
-                      </MDTypography>
-                      <MDInput
-                        type="date"
-                        fullWidth
-                        value={dateOfApplication}
-                        readOnly // Prevent manual editing
-                      />
-                    </MDBox>
-                    {/* 'From' and 'To' Fields Side by Side */}
-                    <Grid container spacing={3}>
-                      <Grid item xs={6}>
-                        <MDBox mb={3}>
-                          <MDTypography variant="caption" fontWeight="medium" color="text">
-                            From
-                          </MDTypography>
-                          <MDInput
-                            type="date"
-                            fullWidth
-                            value={fromDate}
-                            onChange={handleFromDateChange}
-                          />
-                        </MDBox>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <MDBox mb={3}>
-                          <MDTypography variant="caption" fontWeight="medium" color="text">
-                            To
-                          </MDTypography>
-                          <MDInput
-                            type="date"
-                            fullWidth
-                            value={toDate}
-                            onChange={handleToDateChange}
-                          />
-                        </MDBox>
-                      </Grid>
+                <Grid container spacing={1}>
+                  {/* Date of Application and Nature of Leave Fields */}
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={6}>
+                      <MDBox mb={3}>
+                        <MDTypography variant="caption" fontWeight="medium" color="text">
+                          Date of Application
+                        </MDTypography>
+                        <MDInput
+                          type="date"
+                          fullWidth
+                          value={dateOfApplication}
+                          readOnly // Prevent manual editing
+                        />
+                      </MDBox>
                     </Grid>
-                    {/* Number of Days Box */}
-                    <Grid container spacing={3}>
-                      <Grid item xs={6}>
-                        <MDBox mb={3}>
-                          <MDTypography variant="caption" fontWeight="medium" color="text">
-                            Number of Days
-                          </MDTypography>
-                          <MDInput
-                            type="number"
-                            fullWidth
-                            value={numberOfDays}
-                            readOnly // Prevent manual editing
-                          />
-                        </MDBox>
-                      </Grid>
+                    <Grid item xs={12} md={6}>
+                      <MDBox mb={3}>
+                        <MDTypography variant="caption" fontWeight="medium" color="text">
+                          Nature of Leave
+                        </MDTypography>
+                        <Select
+                          value={reason}
+                          onChange={handleReasonChange}
+                          displayEmpty
+                          fullWidth
+                          sx={{ height: "40px" }}
+                        >
+                          <MenuItem value="" disabled>
+                            Select a Nature
+                          </MenuItem>
+                          <MenuItem value="PersonalLeavew/Pay">Personal Leave w/ Pay</MenuItem>
+                          <MenuItem value="PersonalLeavew/oPay">Personal Leave w/o Pay</MenuItem>
+                          <MenuItem value="SickLeavew/Pay">Sick Leave w/ Pay</MenuItem>
+                          <MenuItem value="SickLeavew/oPay">Sick Leave w/o Pay</MenuItem>
+                          <MenuItem value="VacationLeavew/Pay">Vacation Leave w/ Pay</MenuItem>
+                          <MenuItem value="VacationLeavew/oPay">Vacation Leave w/o Pay</MenuItem>
+                          <MenuItem value="ServiceLeave/OfficialBusiness">
+                            Service Leave/Official Business
+                          </MenuItem>
+                          <MenuItem value="StudyLeave">Study Leave</MenuItem>
+                          <MenuItem value="MaternityLeave">Maternity Leave</MenuItem>
+                          <MenuItem value="PaternityLeave">Paternity Leave</MenuItem>
+                          <MenuItem value="Training">Training</MenuItem>
+                          <MenuItem value="Others">Others</MenuItem>
+                        </Select>
+                      </MDBox>
                     </Grid>
                   </Grid>
 
-                  {/* Column 2 */}
-                  <Grid item xs={12} md={6}>
-                    <MDBox mb={3}>
-                      <MDTypography variant="caption" fontWeight="medium" color="text">
-                        Nature of Leave
-                      </MDTypography>
-                      <Select
-                        value={reason}
-                        onChange={handleReasonChange}
-                        displayEmpty
-                        fullWidth
-                        sx={{ height: "40px" }}
-                      >
-                        <MenuItem value="" disabled>
-                          Select a Nature
-                        </MenuItem>
-                        <MenuItem value="PersonalLeavew/Pay">Personal Leave w/ Pay</MenuItem>
-                        <MenuItem value="PersonalLeavew/oPay">Personal Leave w/o Pay</MenuItem>
-                        <MenuItem value="SickLeavew/Pay">Sick Leave w/ Pay</MenuItem>
-                        <MenuItem value="SickLeavew/oPay">Sick Leave w/o Pay</MenuItem>
-                        <MenuItem value="VacationLeavew/Pay">Vacation Leave w/ Pay</MenuItem>
-                        <MenuItem value="VacationLeavew/oPay">Vacation Leave w/o Pay</MenuItem>
-                        <MenuItem value="ServiceLeave/OfficialBusiness">
-                          Service Leave/Official Business
-                        </MenuItem>
-                        <MenuItem value="StudyLeave">Study Leave</MenuItem>
-                        <MenuItem value="MaternityLeave">Maternity Leave</MenuItem>
-                        <MenuItem value="PaternityLeave">Paternity Leave</MenuItem>
-                        <MenuItem value="Training">Training</MenuItem>
-                        <MenuItem value="Others">Others</MenuItem>
-                      </Select>
-                    </MDBox>
-                    <MDBox mb={3}>
-                      <MDTypography variant="caption" fontWeight="medium" color="text">
-                        Reason for Leave
-                      </MDTypography>
-                      <MDInput placeholder="Enter the reason for your leave" fullWidth />
-                    </MDBox>
-                    {reason === "Others" && (
+                  {/* Reason for Leave and Specific Reason for Others */}
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={6}>
                       <MDBox mb={3}>
                         <MDTypography variant="caption" fontWeight="medium" color="text">
-                          For Other Reasons, Please Specify
+                          Reason for Leave
                         </MDTypography>
                         <MDInput
-                          value={otherReason}
-                          onChange={handleOtherReasonChange}
-                          placeholder="Specify your reason"
+                          value={reasonForLeave}
+                          onChange={handleReasonForLeaveChange}
+                          placeholder="Enter the reason for your leave"
                           fullWidth
                         />
                       </MDBox>
+                    </Grid>
+                    {reason === "Others" && (
+                      <Grid item xs={12} md={6}>
+                        <MDBox mb={3}>
+                          <MDTypography variant="caption" fontWeight="medium" color="text">
+                            Specific Reason for Leave
+                          </MDTypography>
+                          <MDInput
+                            value={specificReason}
+                            onChange={handleSpecificReasonChange}
+                            placeholder="Specify your reason"
+                            fullWidth
+                          />
+                        </MDBox>
+                      </Grid>
                     )}
                   </Grid>
-                </Grid>
-                {/* Submit and Cancel Buttons */}
-                <Grid container spacing={3} justifyContent="flex-end">
-                  <Grid item>
-                    <MDButton color="success" onClick={handleSubmit}>
-                      Submit
-                    </MDButton>
+
+                  {/* Date of Leave (From and To) */}
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={6}>
+                      <MDBox mb={3}>
+                        <MDTypography variant="caption" fontWeight="medium" color="text">
+                          Date of Leave (From)
+                        </MDTypography>
+                        <MDInput
+                          type="date"
+                          value={fromDate}
+                          onChange={handleFromDateChange}
+                          fullWidth
+                        />
+                      </MDBox>
+                    </Grid>
+                    <Grid item xs={12} md={6}>
+                      <MDBox mb={3}>
+                        <MDTypography variant="caption" fontWeight="medium" color="text">
+                          Date of Leave (To)
+                        </MDTypography>
+                        <MDInput
+                          type="date"
+                          value={toDate}
+                          onChange={handleToDateChange}
+                          fullWidth
+                        />
+                      </MDBox>
+                    </Grid>
                   </Grid>
-                  <Grid item>
-                    <MDButton color="error" onClick={handleCancel}>
-                      Cancel
-                    </MDButton>
+
+                  {/* Number of Days */}
+                  <Grid container spacing={3}>
+                    <Grid item xs={12} md={6}>
+                      <MDBox mb={3}>
+                        <MDTypography variant="caption" fontWeight="medium" color="text">
+                          Number of Days
+                        </MDTypography>
+                        <MDInput value={numberOfDays} fullWidth readOnly />
+                      </MDBox>
+                    </Grid>
+                  </Grid>
+
+                  {/* Submit and Cancel Buttons */}
+                  <Grid item xs={12} md={12}>
+                    <MDBox display="flex" justifyContent="flex-end" gap={2}>
+                      <MDButton
+                        variant="gradient"
+                        color="success"
+                        onClick={handleSubmit}
+                        size="small"
+                      >
+                        Submit
+                      </MDButton>
+                      <MDButton
+                        variant="outlined"
+                        color="error"
+                        onClick={handleCancel}
+                        size="small"
+                      >
+                        Cancel
+                      </MDButton>
+                    </MDBox>
                   </Grid>
                 </Grid>
               </MDBox>
