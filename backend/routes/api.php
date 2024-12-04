@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\PersonalInfoController;
+use App\Http\Controllers\RegistrationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,5 +29,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
     Route::post('/documents', [DocumentController::class, 'store']);
+    Route::post('/register', [RegistrationController::class, 'store']);
 });
 // api.php

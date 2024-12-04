@@ -2,7 +2,6 @@ import Dashboard from "layouts/dashboard";
 import Tables from "layouts/tables";
 import Billing from "layouts/billing";
 import RTL from "layouts/rtl";
-import Notifications from "layouts/notifications";
 import SignIn from "layouts/authentication/sign-in";
 import SignUp from "layouts/authentication/sign-up";
 
@@ -52,7 +51,7 @@ const employeeRoutes = [
     key: "notifications",
     icon: <Icon fontSize="small">payments</Icon>,
     route: "/notifications",
-    component: <Notifications />,
+    // component: <Notifications />,
   },
   {
     type: "collapse",
