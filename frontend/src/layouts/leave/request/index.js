@@ -1,4 +1,4 @@
-// @mui material components
+import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 
 // BCHRIS React components
@@ -6,83 +6,127 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DataTable from "examples/Tables/DataTable";
 
-function LeavesRequested() {
+// BCHRIS React example components
+import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
+import DashboardNavbar from "examples/Navbars/DashboardNavbar";
+import Footer from "examples/Footer";
+
+function Request() {
   const data = {
     columns: [
-      { Header: "Date Request", accessor: "date request", align: "left" },
-      { Header: "Request Type", accessor: "request type", align: "left" },
-      { Header: "Status", accessor: "status", align: "center" },
-      { Header: "Comments", accessor: "comments", align: "center" },
+      { Header: "date request", accessor: "dateRequest", align: "left" },
+      { Header: "request type", accessor: "requestType", align: "left" },
+      { Header: "status", accessor: "status", align: "center" },
+      { Header: "comments", accessor: "comments", align: "center" },
     ],
     rows: [
       {
-        "date request": (
-          <MDTypography variant="button" fontWeight="medium">
+        dateRequest: (
+          <MDTypography variant="caption" color="text">
             2024-12-01
           </MDTypography>
         ),
-        "request type": (
+        requestType: (
           <MDTypography variant="caption" color="text">
-            Sick Leave
+            Leave Application
           </MDTypography>
         ),
         status: (
-          <MDTypography variant="caption" color="text" fontWeight="medium">
+          <MDTypography variant="caption" color="text">
             Approved
           </MDTypography>
         ),
         comments: (
           <MDTypography variant="caption" color="text">
-            Doctor's appointment
+            Approved by Manager
           </MDTypography>
         ),
       },
       {
-        "date request": (
-          <MDTypography variant="button" fontWeight="medium">
-            2024-12-05
+        dateRequest: (
+          <MDTypography variant="caption" color="text">
+            2024-12-02
           </MDTypography>
         ),
-        "request type": (
+        requestType: (
           <MDTypography variant="caption" color="text">
-            Vacation Leave
+            Overtime Request
           </MDTypography>
         ),
         status: (
-          <MDTypography variant="caption" color="text" fontWeight="medium">
+          <MDTypography variant="caption" color="text">
             Pending
           </MDTypography>
         ),
         comments: (
           <MDTypography variant="caption" color="text">
-            Family vacation
+            Awaiting HR approval
           </MDTypography>
         ),
       },
-      // Additional rows can be added here...
+      {
+        dateRequest: (
+          <MDTypography variant="caption" color="text">
+            2024-12-03
+          </MDTypography>
+        ),
+        requestType: (
+          <MDTypography variant="caption" color="text">
+            Equipment Purchase
+          </MDTypography>
+        ),
+        status: (
+          <MDTypography variant="caption" color="text">
+            Denied
+          </MDTypography>
+        ),
+        comments: (
+          <MDTypography variant="caption" color="text">
+            Insufficient budget
+          </MDTypography>
+        ),
+      },
+      // Add additional rows as needed
     ],
   };
 
   return (
-    <Card>
-      <MDBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
-        <MDBox>
-          <MDTypography variant="h6" gutterBottom>
-            Leaves Requested
-          </MDTypography>
-        </MDBox>
+    <DashboardLayout>
+      <DashboardNavbar />
+      <MDBox pt={6} pb={3}>
+        <Grid container spacing={6}>
+          <Grid item xs={12}>
+            <Card>
+              <MDBox
+                mx={2}
+                mt={-3}
+                py={3}
+                px={2}
+                variant="gradient"
+                bgColor="info"
+                borderRadius="lg"
+                coloredShadow="info"
+              >
+                <MDTypography variant="h6" color="white">
+                  Request List
+                </MDTypography>
+              </MDBox>
+              <MDBox p={3}>
+                <DataTable
+                  table={{ columns: data.columns, rows: data.rows }}
+                  showTotalEntries={false}
+                  isSorted={false}
+                  noEndBorder
+                  entriesPerPage={false}
+                />
+              </MDBox>
+            </Card>
+          </Grid>
+        </Grid>
       </MDBox>
-      <MDBox>
-        <DataTable
-          table={{ columns: data.columns, rows: data.rows }}
-          showTotalEntries={false}
-          isSorted={false}
-          noEndBorder
-          entriesPerPage={false}
-        />
-      </MDBox>
-    </Card>
+      <Footer />
+    </DashboardLayout>
   );
 }
 
-export default LeavesRequested;
+export default Request;
