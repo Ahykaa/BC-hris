@@ -10,6 +10,8 @@ import Icon from "@mui/material/Icon";
 import Leave from "layouts/leave";
 import Document from "layouts/document";
 import ProfileInfo from "layouts/profileInfo";
+import LeavesRequested from "layouts/leave/request";
+import Request from "layouts/leave/request"; // Importing the Request component
 
 const employeeRoutes = [
   {
@@ -18,7 +20,7 @@ const employeeRoutes = [
     key: "dashboard",
     icon: <Icon fontSize="small">home</Icon>,
     route: "/dashboard",
-    component: <Dashboard />,
+    component: <Request />, // Ensure this corresponds to the correct imported component
   },
   {
     type: "collapse",

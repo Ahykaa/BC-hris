@@ -1,96 +1,73 @@
-/**
-=========================================================
-* BCHRIS React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
-import { useState } from "react";
-
 // @mui material components
 import Card from "@mui/material/Card";
-import Icon from "@mui/material/Icon";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 
 // BCHRIS React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-
-// BCHRIS React examples
 import DataTable from "examples/Tables/DataTable";
 
-// Data
-import data from "layouts/dashboard/components/Projects/data";
-
-function Projects() {
-  const { columns, rows } = data();
-  const [menu, setMenu] = useState(null);
-
-  const openMenu = ({ currentTarget }) => setMenu(currentTarget);
-  const closeMenu = () => setMenu(null);
-
-  const renderMenu = (
-    <Menu
-      id="simple-menu"
-      anchorEl={menu}
-      anchorOrigin={{
-        vertical: "top",
-        horizontal: "left",
-      }}
-      transformOrigin={{
-        vertical: "top",
-        horizontal: "right",
-      }}
-      open={Boolean(menu)}
-      onClose={closeMenu}
-    >
-      <MenuItem onClick={closeMenu}>Action</MenuItem>
-      <MenuItem onClick={closeMenu}>Another action</MenuItem>
-      <MenuItem onClick={closeMenu}>Something else</MenuItem>
-    </Menu>
-  );
+function EmployeeList() {
+  const data = {
+    columns: [
+      { Header: "employee id", accessor: "employee id", align: "left" },
+      { Header: "last name", accessor: "last", align: "left" },
+      { Header: "first name", accessor: "first name", align: "center" },
+      { Header: "position", accessor: "position", align: "center" },
+      { Header: "department", accessor: "department", align: "center" },
+      { Header: "date started", accessor: "date started", align: "right" },
+      { Header: "action", accessor: "action", align: "right" },
+    ],
+    rows: [
+      {
+        companies: (
+          <MDTypography variant="button" fontWeight="medium">
+            Material UI XD Version
+          </MDTypography>
+        ),
+        members: (
+          <MDTypography variant="caption" color="text">
+            Ryan Tompson, Romina Hadid, Alexander Smith, Jessica Doe
+          </MDTypography>
+        ),
+        budget: (
+          <MDTypography variant="caption" color="text" fontWeight="medium">
+            $14,000
+          </MDTypography>
+        ),
+      },
+      {
+        companies: (
+          <MDTypography variant="button" fontWeight="medium">
+            Add Progress Track
+          </MDTypography>
+        ),
+        members: (
+          <MDTypography variant="caption" color="text">
+            Romina Hadid, Jessica Doe
+          </MDTypography>
+        ),
+        budget: (
+          <MDTypography variant="caption" color="text" fontWeight="medium">
+            $3,000
+          </MDTypography>
+        ),
+      },
+      // Additional rows can be added here...
+    ],
+  };
 
   return (
     <Card>
       <MDBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
         <MDBox>
           <MDTypography variant="h6" gutterBottom>
-            Projects
+            List of Employees
           </MDTypography>
-          <MDBox display="flex" alignItems="center" lineHeight={0}>
-            <Icon
-              sx={{
-                fontWeight: "bold",
-                color: ({ palette: { info } }) => info.main,
-                mt: -0.5,
-              }}
-            >
-              done
-            </Icon>
-            <MDTypography variant="button" fontWeight="regular" color="text">
-              &nbsp;<strong>30 done</strong> this month
-            </MDTypography>
-          </MDBox>
         </MDBox>
-        <MDBox color="text" px={2}>
-          <Icon sx={{ cursor: "pointer", fontWeight: "bold" }} fontSize="small" onClick={openMenu}>
-            more_vert
-          </Icon>
-        </MDBox>
-        {renderMenu}
       </MDBox>
       <MDBox>
         <DataTable
-          table={{ columns, rows }}
+          table={{ columns: data.columns, rows: data.rows }}
           showTotalEntries={false}
           isSorted={false}
           noEndBorder
@@ -101,4 +78,4 @@ function Projects() {
   );
 }
 
-export default Projects;
+export default EmployeeList;
