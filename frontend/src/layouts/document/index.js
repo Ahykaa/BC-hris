@@ -52,6 +52,7 @@ function Document() {
     setEmployeeId("");
     setFirstName("");
     setMiddleName("");
+    x;
     setLastName("");
     setRequestedDocuments([]);
     setPurpose("");
