@@ -6,49 +6,56 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DataTable from "examples/Tables/DataTable";
 
-function EmployeeList() {
+function LeavesRequested() {
   const data = {
     columns: [
-      { Header: "employee id", accessor: "employee id", align: "left" },
-      { Header: "last name", accessor: "last", align: "left" },
-      { Header: "first name", accessor: "first name", align: "center" },
-      { Header: "position", accessor: "position", align: "center" },
-      { Header: "department", accessor: "department", align: "center" },
-      { Header: "date started", accessor: "date started", align: "right" },
-      { Header: "action", accessor: "action", align: "right" },
+      { Header: "Date Request", accessor: "date request", align: "left" },
+      { Header: "Request Type", accessor: "request type", align: "left" },
+      { Header: "Status", accessor: "status", align: "center" },
+      { Header: "Comments", accessor: "comments", align: "center" },
     ],
     rows: [
       {
-        companies: (
+        "date request": (
           <MDTypography variant="button" fontWeight="medium">
-            Material UI XD Version
+            2024-12-01
           </MDTypography>
         ),
-        members: (
+        "request type": (
           <MDTypography variant="caption" color="text">
-            Ryan Tompson, Romina Hadid, Alexander Smith, Jessica Doe
+            Sick Leave
           </MDTypography>
         ),
-        budget: (
+        status: (
           <MDTypography variant="caption" color="text" fontWeight="medium">
-            $14,000
+            Approved
+          </MDTypography>
+        ),
+        comments: (
+          <MDTypography variant="caption" color="text">
+            Doctor's appointment
           </MDTypography>
         ),
       },
       {
-        companies: (
+        "date request": (
           <MDTypography variant="button" fontWeight="medium">
-            Add Progress Track
+            2024-12-05
           </MDTypography>
         ),
-        members: (
+        "request type": (
           <MDTypography variant="caption" color="text">
-            Romina Hadid, Jessica Doe
+            Vacation Leave
           </MDTypography>
         ),
-        budget: (
+        status: (
           <MDTypography variant="caption" color="text" fontWeight="medium">
-            $3,000
+            Pending
+          </MDTypography>
+        ),
+        comments: (
+          <MDTypography variant="caption" color="text">
+            Family vacation
           </MDTypography>
         ),
       },
@@ -61,7 +68,7 @@ function EmployeeList() {
       <MDBox display="flex" justifyContent="space-between" alignItems="center" p={3}>
         <MDBox>
           <MDTypography variant="h6" gutterBottom>
-            List of Employees
+            Leaves Requested
           </MDTypography>
         </MDBox>
       </MDBox>
@@ -78,4 +85,4 @@ function EmployeeList() {
   );
 }
 
-export default EmployeeList;
+export default LeavesRequested;
