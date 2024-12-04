@@ -27,7 +27,9 @@ import { CacheProvider } from "@emotion/react";
 import createCache from "@emotion/cache";
 
 // BCHRIS React routes
-import routes from "routes";
+import axiosInstance from "services/axiosInstance"; // Ensure this is the correct import for axios
+import employeeRoutes from "routes/employeeRoutes";
+import adminRoutes from "routes/adminRoutes";
 
 // BCHRIS React contexts
 import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "context";
@@ -39,6 +41,17 @@ import brandDark from "assets/images/logo-ct-dark.png";
 // Dummy authentication state (replace with your actual auth logic)
 const isAuthenticated = () => {
   return localStorage.getItem("authToken") !== null; // Replace with your authentication logic
+};
+
+// Fetch user role
+const fetchUserRole = async () => {
+  try {
+    const response = await axiosInstance.get("/user");
+    return response.data.role; // Assuming the API response contains the user's role
+  } catch (error) {
+    console.error("Failed to fetch user role:", error);
+    return "employee"; // Default role in case of error
+  }
 };
 
 export default function App() {
@@ -56,6 +69,7 @@ export default function App() {
   const [onMouseEnter, setOnMouseEnter] = useState(false);
   const [rtlCache, setRtlCache] = useState(null);
   const { pathname } = useLocation();
+  const [routes, setRoutes] = useState([]); // State for dynamically loaded routes
 
   // Cache for the rtl
   useMemo(() => {
@@ -97,10 +111,24 @@ export default function App() {
     document.scrollingElement.scrollTop = 0;
   }, [pathname]);
 
+  // Fetch the correct routes based on the role
+  useEffect(() => {
+    const getRoutesForRole = async () => {
+      const role = await fetchUserRole();
+      if (role === "admin") {
+        setRoutes(adminRoutes); // Set admin routes
+      } else if (role === "employee") {
+        setRoutes(employeeRoutes); // Set employee routes
+      }
+    };
+    getRoutesForRole();
+  }, []);
+
+  // Dynamically generate routes
   const getRoutes = (allRoutes) =>
     allRoutes.map((route) => {
       if (route.collapse) {
-        return getRoutes(route.collapse);
+        return getRoutes(route.collapse); // Recursively handle nested routes
       }
 
       if (route.route) {
@@ -133,6 +161,11 @@ export default function App() {
       </Icon>
     </MDBox>
   );
+
+  // If routes are not yet fetched, show a loading screen or empty routes
+  if (routes.length === 0) {
+    return <div>Loading...</div>; // You can replace this with a spinner or loader
+  }
 
   return direction === "rtl" ? (
     <CacheProvider value={rtlCache}>
