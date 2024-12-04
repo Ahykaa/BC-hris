@@ -43,4 +43,21 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'User not found.'], 404);
     }
+
+    public function user(Request $request)
+    {
+        $user = Auth::user();
+
+        if ($user) {
+            return response()->json([
+                'id' => $user->id,
+                'firstName' => $user->firstName,
+                'lastName' => $user->lastName,
+                'email' => $user->email,
+                'role' => $user->role,
+            ]);
+        }
+
+        return response()->json(['message' => 'User not found.'], 404);
+    }
 }
