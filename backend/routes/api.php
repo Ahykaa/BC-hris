@@ -7,6 +7,8 @@ use App\Http\Controllers\PersonalInfoController;
 use App\Http\Controllers\RegistrationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Models\Leave;
+use App\Models\Document;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,15 +22,35 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::post('/login', [AuthController::class, 'login']);
+
 Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/user', [AuthController::class, 'user']);
 
+    // Resource routes for Leave and Profile
     Route::resource('leave', LeaveController::class);
     Route::resource('profile', PersonalInfoController::class);
 
-
+    // Route for storing documents
     Route::post('/documents', [DocumentController::class, 'store']);
+
+    // Route to get all requests (leave & document) for an authenticated employee
+    Route::get('/employee/requests', function () {
+        $userId = auth()->user()->id;
+
+        // Fetch the leave and document requests for the authenticated employee
+        $leaveRequests = Leave::where('employee_id', $userId)->get();
+        $documentRequests = Document::where('employee_id', $userId)->get();
+
+        // Return the leave and document data as JSON
+        return response()->json([
+            'leaves' => $leaveRequests,
+            'documents' => $documentRequests,
+        ]);
+    }
+);
+
+    // Route for registration
     Route::post('/register', [RegistrationController::class, 'store']);
-});
-// api.php
+}
+);

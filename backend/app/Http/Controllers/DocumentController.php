@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Document;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 
 class DocumentController extends Controller
 {
+    /**
+     * Store a newly created document request in storage.
+     */
     public function store(Request $request)
     {
         // Validate incoming data
@@ -23,7 +25,6 @@ class DocumentController extends Controller
             'otherDocument' => 'nullable|string',
             'dateOfRequest' => 'required|date',
         ]);
-
 
         // Create the document record
         $document = new Document();
@@ -41,7 +42,19 @@ class DocumentController extends Controller
         // Save the document record to the database
         $document->save();
 
-        // Return success response
-        return response()->json($document, 201);
+        return response()->json($document, 201); // Return the created document record
+    }
+
+    /**
+     * Display all requests for the authenticated user.
+     */
+    public function getEmployeeRequests()
+    {
+        $userId = auth()->user()->id;
+
+        // Fetch all document requests for the authenticated employee
+        $documentRequests = Document::where('employee_id', $userId)->get();
+
+        return response()->json($documentRequests, 200);
     }
 }
