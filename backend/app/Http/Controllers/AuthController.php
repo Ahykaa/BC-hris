@@ -12,23 +12,29 @@ class AuthController extends Controller
 {
     public function login(Request $request)
     {
+        // Removed the 'unique:users' validation rule
         $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
+            'username' => 'required|string',  // No need for 'unique' validation here
+            'password' => 'required|string',
         ]);
 
-        $user = User::where('email', $request->email)->first();
+        // Find the user by the username
+        $user = User::where('username', $request->username)->first();
 
+        // If the user doesn't exist or the password is incorrect
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
+                'username' => ['The provided credentials are incorrect.'],
             ]);
         }
 
+        // Generate a personal access token
         $token = $user->createToken('Personal Access Token')->plainTextToken;
 
+        // Return the token in the response
         return response()->json(['token' => $token]);
     }
+
     public function logout(Request $request)
     {
         $user = Auth::user();
