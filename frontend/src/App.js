@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useContext } from "react";
 import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 
 // @mui material components
@@ -37,6 +37,8 @@ import { useMaterialUIController, setMiniSidenav, setOpenConfigurator } from "co
 // Images
 import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
+import { RoleContext } from "context/RoleContext";
+import { CircularProgress } from "@mui/material";
 
 // Dummy authentication state (replace with your actual auth logic)
 const isAuthenticated = () => {
@@ -70,6 +72,15 @@ export default function App() {
   const [rtlCache, setRtlCache] = useState(null);
   const { pathname } = useLocation();
   const [routes, setRoutes] = useState([]); // State for dynamically loaded routes
+  const { role } = useContext(RoleContext);
+
+  useEffect(() => {
+    if (role === "admin") {
+      setRoutes(adminRoutes); // Set admin routes when role is 'admin'
+    } else if (role === "employee") {
+      setRoutes(employeeRoutes); // Set employee routes when role is 'employee'
+    }
+  }, [role]);
 
   // Cache for the rtl
   useMemo(() => {
@@ -128,7 +139,7 @@ export default function App() {
   const getRoutes = (allRoutes) =>
     allRoutes.map((route) => {
       if (route.collapse) {
-        return getRoutes(route.collapse); // Recursively handle nested routes
+        return getRoutes(route.collapse); // Handle nested routes
       }
 
       if (route.route) {
@@ -137,6 +148,16 @@ export default function App() {
 
       return null;
     });
+
+  if (routes.length === 0) {
+    return (
+      <div
+        style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100vh" }}
+      >
+        <CircularProgress color="success" /> {/* Show CircularProgress */}
+      </div>
+    );
+  }
 
   const configsButton = (
     <MDBox
