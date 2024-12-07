@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom"; // For navigation
 
@@ -26,12 +26,14 @@ import BasicLayout from "layouts/authentication/components/BasicLayout";
 // Images
 import bgImage from "assets/images/HRISBG.png";
 import axiosInstance from "services/axiosInstance";
+import { RoleContext } from "context/RoleContext";
 
 function Basic() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate(); // Navigation hook
+  const { setRole } = useContext(RoleContext);
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
 
@@ -40,12 +42,16 @@ function Basic() {
     event.preventDefault();
     try {
       const response = await axiosInstance.post("/login", { email, password });
-      console.log("Backend response:", response.data);
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
+
+        // Fetch the role after login and update global state
+        const userResponse = await axiosInstance.get("/user");
+        setRole(userResponse.data.role); // Set the role in context
+
         navigate("/dashboard");
       } else if (response.data.message) {
-        alert(response.data.message); // Show error message from backend
+        alert(response.data.message);
       } else {
         alert("Invalid credentials. Please try again.");
       }
