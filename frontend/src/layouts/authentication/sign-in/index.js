@@ -29,7 +29,7 @@ import axiosInstance from "services/axiosInstance";
 import { RoleContext } from "context/RoleContext";
 
 function Basic() {
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState(""); // Changed from email to username
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const navigate = useNavigate(); // Navigation hook
@@ -41,7 +41,7 @@ function Basic() {
   const handleSignIn = async (event) => {
     event.preventDefault();
     try {
-      const response = await axiosInstance.post("/login", { email, password });
+      const response = await axiosInstance.post("/login", { username, password }); // Changed email to username
       if (response.data.token) {
         localStorage.setItem("token", response.data.token);
 
@@ -83,13 +83,13 @@ function Basic() {
           <MDBox component="form" role="form" onSubmit={handleSignIn}>
             <MDBox mb={2}>
               <MDInput
-                id="email"
-                type="email"
-                label="Email"
-                name="email"
+                id="username" // Changed from email to username
+                type="text" // Username should typically be a text input
+                label="Username" // Changed the label from Email to Username
+                name="username" // Changed from email to username
                 fullWidth
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                value={username} // Changed to use username state
+                onChange={(e) => setUsername(e.target.value)} // Set username state
               />
             </MDBox>
             <MDBox mb={2}>
