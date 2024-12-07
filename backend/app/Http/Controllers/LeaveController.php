@@ -61,6 +61,19 @@ class LeaveController extends Controller
     }
 
     /**
+     * Display all requests for the authenticated user.
+     */
+    public function getEmployeeRequests()
+    {
+        $userId = auth()->user()->id;
+
+        // Fetch all leave requests for the authenticated employee
+        $leaveRequests = Leave::where('employee_id', $userId)->get();
+
+        return response()->json($leaveRequests, 200);
+    }
+
+    /**
      * Display the specified resource.
      */
     public function show(Leave $leave)
