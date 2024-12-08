@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import MenuItem from "@mui/material/MenuItem";
@@ -16,7 +17,10 @@ import MDButton from "components/MDButton";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import { useState, useEffect } from "react";
+
+// Material-UI Snackbar and Alert
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
 
 function Document() {
@@ -31,6 +35,10 @@ function Document() {
   const [numCopies, setNumCopies] = useState(1); // State for number of copies
   const [otherDocument, setOtherDocument] = useState(""); // State for custom document if "Others" is selected
   const [dateOfRequest, setDateOfRequest] = useState(""); // State for date of request
+
+  const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const navigate = useNavigate();
   const documentOptions = [
@@ -52,7 +60,6 @@ function Document() {
     setEmployeeId("");
     setFirstName("");
     setMiddleName("");
-    x;
     setLastName("");
     setRequestedDocuments([]);
     setPurpose("");
@@ -83,7 +90,9 @@ function Document() {
 
       // Handle successful document submission
       console.log("Document request submitted:", response.data);
-      alert("Document request submitted successfully!");
+      setSnackbarMessage("Document request submitted successfully!");
+      setSnackbarSeverity("success");
+      setOpenSnackbar(true);
 
       // Optionally, clear form fields if needed
       setEmployeeId("");
@@ -104,7 +113,9 @@ function Document() {
     } catch (error) {
       // Handle error during submission
       console.error("Error submitting document request:", error.response || error);
-      alert("Error submitting document request");
+      setSnackbarMessage("Error submitting document request");
+      setSnackbarSeverity("error");
+      setOpenSnackbar(true);
     }
   };
 
@@ -282,6 +293,23 @@ function Document() {
           </Grid>
         </Grid>
       </MDBox>
+
+      {/* Snackbar for success and error messages at the top */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }} // Position at the top
+      >
+        <Alert
+          onClose={() => setOpenSnackbar(false)}
+          severity={snackbarSeverity}
+          sx={{ width: "100%" }}
+        >
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
+
       <Footer />
     </DashboardLayout>
   );
