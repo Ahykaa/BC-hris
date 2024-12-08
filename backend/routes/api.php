@@ -9,15 +9,16 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\Leave;
 use App\Models\Document;
+use App\Models\Department; // Add Department model for fetching departments
 
 /*
-|--------------------------------------------------------------------------
+|-------------------------------------------------------------------------- 
 | API Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| is assigned the "api" middleware group. Enjoy building your API!
+|-------------------------------------------------------------------------- 
+| 
+| Here is where you can register API routes for your application. These 
+| routes are loaded by the RouteServiceProvider within a group which 
+| is assigned the "api" middleware group. Enjoy building your API! 
 |
 */
 
@@ -47,10 +48,13 @@ Route::middleware('auth:sanctum')->group(function () {
             'leaves' => $leaveRequests,
             'documents' => $documentRequests,
         ]);
-    }
-);
+    });
 
     // Route for registration
     Route::post('/register', [RegistrationController::class, 'store']);
-}
-);
+
+    // Route to fetch departments (for dropdown in frontend)
+    Route::get('/departments', function () {
+        return response()->json(Department::all());  // Get all departments
+    });
+});

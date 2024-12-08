@@ -1,7 +1,11 @@
+import { useState, useEffect } from "react";
+import axiosInstance from "services/axiosInstance";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 // BCHRIS React components
 import MDBox from "components/MDBox";
@@ -13,13 +17,10 @@ import MDButton from "components/MDButton";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import { useState } from "react";
-import axiosInstance from "services/axiosInstance";
 import { useNavigate } from "react-router-dom";
 
 function Registration() {
   const navigate = useNavigate(); // Initialize navigate
-
   const [formData, setFormData] = useState({
     employee_id: "",
     firstName: "",
@@ -32,15 +33,35 @@ function Registration() {
     password: "",
   });
 
+  const [departments, setDepartments] = useState([]);
+  const [openSnackbar, setOpenSnackbar] = useState(false); // Snackbar visibility
+
+  // Fetch departments on component mount
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await axiosInstance.get("/departments");
+        if (response.status === 200) {
+          setDepartments(response.data); // Store departments in state
+        }
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+      }
+    };
+
+    fetchDepartments();
+  }, []);
+
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async () => {
     try {
-      const response = await axiosInstance.post("/register", formData); // Updated API endpoint to /api/register
+      const response = await axiosInstance.post("/register", formData); // Updated API endpoint to /register
       if (response.status === 200 || response.status === 201) {
-        alert("Employee is successfully registered!");
+        // Show Snackbar instead of alert
+        setOpenSnackbar(true);
         console.log("Response:", response.data);
 
         // Redirect after a short delay
@@ -56,10 +77,8 @@ function Registration() {
     }
   };
 
-  const [reason, setReason] = useState("");
-
-  const handleReasonChange = (event) => {
-    setReason(event.target.value);
+  const handleCancel = () => {
+    navigate("/dashboard"); // Redirect to dashboard on cancel
   };
 
   return (
@@ -84,7 +103,6 @@ function Registration() {
                 </MDTypography>
               </MDBox>
               <MDBox p={3}>
-                {/* Personal Info Section */}
                 <MDTypography variant="h6" fontWeight="medium">
                   EMPLOYEE REGISTRATION
                 </MDTypography>
@@ -124,12 +142,33 @@ function Registration() {
                   </Grid>
 
                   <Grid item xs={12} md={4}>
-                    <MDInput
+                    <Select
                       label="Department"
                       fullWidth
                       value={formData.dept_id}
                       onChange={(e) => handleInputChange("dept_id", e.target.value)}
-                    />
+                      displayEmpty
+                      sx={{
+                        padding: "10px",
+                        fontSize: "1rem",
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: "8px",
+                        },
+                      }}
+                    >
+                      <MenuItem value="" disabled>
+                        Select Department
+                      </MenuItem>
+                      {departments.length > 0 ? (
+                        departments.map((dept) => (
+                          <MenuItem key={dept.id} value={dept.id}>
+                            {dept.name}
+                          </MenuItem>
+                        ))
+                      ) : (
+                        <MenuItem value="">Loading...</MenuItem>
+                      )}
+                    </Select>
                   </Grid>
 
                   <Grid item xs={12} md={4}>
@@ -168,9 +207,12 @@ function Registration() {
                   </Grid>
                 </Grid>
 
-                <MDBox mt={3}>
+                <MDBox mt={3} display="flex" justifyContent="flex-end" gap={2}>
                   <MDButton variant="gradient" color="info" onClick={handleSubmit}>
                     Register
+                  </MDButton>
+                  <MDButton variant="outlined" color="error" onClick={handleCancel}>
+                    Cancel
                   </MDButton>
                 </MDBox>
               </MDBox>
@@ -179,6 +221,21 @@ function Registration() {
         </Grid>
       </MDBox>
       <Footer />
+
+      {/* Snackbar for success */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{
+          vertical: "top", // Position it at the top
+          horizontal: "center", // Position it at the center horizontally
+        }}
+      >
+        <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: "100%" }}>
+          Employee is successfully registered!
+        </Alert>
+      </Snackbar>
     </DashboardLayout>
   );
 }

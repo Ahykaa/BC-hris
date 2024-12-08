@@ -8,7 +8,10 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDButton from "components/MDButton"; // Importing MDButton for Submit and Cancel
-import MDAlert from "components/MDAlert"; // Importing MDAlert for the success message
+
+// Material UI components for Snackbar
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 // BCHRIS React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
@@ -26,7 +29,7 @@ function Leave() {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [numberOfDays, setNumberOfDays] = useState(0);
-  const [alertVisible, setAlertVisible] = useState(false); // State for managing the alert visibility
+  const [openSnackbar, setOpenSnackbar] = useState(false); // State for managing the Snackbar visibility
 
   const navigate = useNavigate(); // Updated to useNavigate
 
@@ -112,7 +115,7 @@ function Leave() {
       const response = await axiosInstance.post("/leave", leaveData);
 
       // Handle successful submission
-      setAlertVisible(true); // Show the alert
+      setOpenSnackbar(true); // Show the Snackbar alert
       console.log(response.data); // Log response for debugging
 
       // Optionally, clear the form fields after submission
@@ -146,13 +149,6 @@ function Leave() {
         <Grid container spacing={6}>
           <Grid item xs={12}>
             <Card>
-              {/* Alert for Successful Submission (moved to the top) */}
-              {alertVisible && (
-                <MDAlert color="success" sx={{ fontSize: "0.8rem", padding: "8px" }}>
-                  Leave request submitted successfully!
-                </MDAlert>
-              )}
-
               <MDBox
                 mx={2}
                 mt={-3}
@@ -321,6 +317,21 @@ function Leave() {
         </Grid>
       </MDBox>
       <Footer />
+
+      {/* Snackbar for success */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={6000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{
+          vertical: "top", // Position it at the top
+          horizontal: "center", // Position it at the center horizontally
+        }}
+      >
+        <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: "100%" }}>
+          Leave request submitted successfully!
+        </Alert>
+      </Snackbar>
     </DashboardLayout>
   );
 }
