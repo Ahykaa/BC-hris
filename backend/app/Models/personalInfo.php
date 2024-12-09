@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class personalInfo extends Model
+class PersonalInfo extends Model
 {
     use HasFactory;
     protected $fillable = [
@@ -39,8 +39,13 @@ class personalInfo extends Model
         'prc_id',
     ];
     public function department()
-{
-    return $this->belongsTo(Department::class, 'dept_id');
-}
+    {
+        return $this->belongsTo(Department::class, 'dept_id');
+    }
+
+    public function familyBackground()
+    {
+        return $this->hasOne(FamilyBackground::class);
+    }
 
 }
