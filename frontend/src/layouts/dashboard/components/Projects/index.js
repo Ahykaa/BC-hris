@@ -6,55 +6,46 @@ import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DataTable from "examples/Tables/DataTable";
 
+// Axios instance for API requests
+import axiosInstance from "services/axiosInstance";
+import React, { useState, useEffect } from "react";
+
 function EmployeeList() {
-  const data = {
-    columns: [
-      { Header: "employee id", accessor: "employee id", align: "left" },
-      { Header: "last name", accessor: "last", align: "left" },
-      { Header: "first name", accessor: "first name", align: "center" },
-      { Header: "position", accessor: "position", align: "center" },
-      { Header: "department", accessor: "department", align: "center" },
-      { Header: "date started", accessor: "date started", align: "right" },
-      { Header: "action", accessor: "action", align: "right" },
-    ],
-    rows: [
-      {
-        companies: (
-          <MDTypography variant="button" fontWeight="medium">
-            Material UI XD Version
-          </MDTypography>
-        ),
-        members: (
-          <MDTypography variant="caption" color="text">
-            Ryan Tompson, Romina Hadid, Alexander Smith, Jessica Doe
-          </MDTypography>
-        ),
-        budget: (
-          <MDTypography variant="caption" color="text" fontWeight="medium">
-            $14,000
-          </MDTypography>
-        ),
-      },
-      {
-        companies: (
-          <MDTypography variant="button" fontWeight="medium">
-            Add Progress Track
-          </MDTypography>
-        ),
-        members: (
-          <MDTypography variant="caption" color="text">
-            Romina Hadid, Jessica Doe
-          </MDTypography>
-        ),
-        budget: (
-          <MDTypography variant="caption" color="text" fontWeight="medium">
-            $3,000
-          </MDTypography>
-        ),
-      },
-      // Additional rows can be added here...
-    ],
-  };
+  const [employees, setEmployees] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEmployees = async () => {
+      try {
+        const response = await axiosInstance.get("/employees");
+        setEmployees(
+          response.data.map((employee) => ({
+            "employee id": employee.employee_id,
+            "last name": employee.lastName,
+            "first name": employee.firstName,
+            position: employee.position || "-",
+            department: employee.department?.name || "-",
+            "date started": new Date(employee.date_started).toLocaleDateString(),
+          }))
+        );
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching employees:", error);
+        setIsLoading(false);
+      }
+    };
+
+    fetchEmployees();
+  }, []);
+
+  const columns = [
+    { Header: "employee id", accessor: "employee id", align: "left" },
+    { Header: "last name", accessor: "last name", align: "left" },
+    { Header: "first name", accessor: "first name", align: "center" },
+    { Header: "position", accessor: "position", align: "center" },
+    { Header: "department", accessor: "department", align: "center" },
+    { Header: "date started", accessor: "date started", align: "right" },
+  ];
 
   return (
     <Card>
@@ -66,13 +57,19 @@ function EmployeeList() {
         </MDBox>
       </MDBox>
       <MDBox>
-        <DataTable
-          table={{ columns: data.columns, rows: data.rows }}
-          showTotalEntries={false}
-          isSorted={false}
-          noEndBorder
-          entriesPerPage={false}
-        />
+        {isLoading ? (
+          <MDTypography variant="subtitle1" align="center" color="text">
+            Loading...
+          </MDTypography>
+        ) : (
+          <DataTable
+            table={{ columns, rows: employees }}
+            showTotalEntries={false}
+            isSorted={true}
+            noEndBorder
+            entriesPerPage={false}
+          />
+        )}
       </MDBox>
     </Card>
   );
