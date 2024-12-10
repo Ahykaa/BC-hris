@@ -13,11 +13,8 @@ class DocumentController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate incoming data
+        // Validate incoming data (no need for firstName and lastName)
         $validated = $request->validate([
-            'firstName' => 'required|string|max:255',
-            'middleName' => 'nullable|string|max:255',
-            'lastName' => 'required|string|max:255',
             'requestedDocuments' => 'required|string',
             'purpose' => 'required|string',
             'orNumber' => 'nullable|string',
@@ -25,25 +22,29 @@ class DocumentController extends Controller
             'otherDocument' => 'nullable|string',
             'dateOfRequest' => 'required|date',
         ]);
-
+    
+        // Get the authenticated user's first and last name
+        $user = auth()->user();
+    
         // Create the document record
         $document = new Document();
-        $document->employee_id = auth()->user()->id; // Use the authenticated user's ID
-        $document->firstName = $validated['firstName'];
-        $document->middleName = $validated['middleName'];
-        $document->lastName = $validated['lastName'];
+        $document->employee_id = $user->id;
+        $document->firstName = $user->firstName; // Assuming 'firstName' is stored in the 'users' table
+        $document->middleName = $user->middleName; // If middle name exists
+        $document->lastName = $user->lastName; // Assuming 'lastName' is stored in the 'users' table
         $document->requestedDocuments = $validated['requestedDocuments'];
         $document->purpose = $validated['purpose'];
         $document->orNumber = $validated['orNumber'];
         $document->numCopies = $validated['numCopies'];
         $document->otherDocument = $validated['otherDocument'];
         $document->dateOfRequest = $validated['dateOfRequest'];
-
-        // Save the document record to the database
+    
+        // Save the document record
         $document->save();
-
+    
         return response()->json($document, 201); // Return the created document record
     }
+    
 
     /**
      * Display all requests for the authenticated user.

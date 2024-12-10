@@ -24,10 +24,6 @@ import Alert from "@mui/material/Alert";
 import { useNavigate } from "react-router-dom";
 
 function Document() {
-  const [employeeId, setEmployeeId] = useState("");
-  const [firstName, setFirstName] = useState("");
-  const [middleName, setMiddleName] = useState("");
-  const [lastName, setLastName] = useState("");
   const [requestedDocuments, setRequestedDocuments] = useState([]);
   const [purpose, setPurpose] = useState("");
   const [orNumber, setOrNumber] = useState("");
@@ -41,6 +37,8 @@ function Document() {
   const [snackbarSeverity, setSnackbarSeverity] = useState("success");
 
   const navigate = useNavigate();
+
+  // Define the document options
   const documentOptions = [
     "Service Record",
     "Employment Contract",
@@ -57,10 +55,6 @@ function Document() {
 
   const handleCancel = () => {
     // Reset all states to their initial values
-    setEmployeeId("");
-    setFirstName("");
-    setMiddleName("");
-    setLastName("");
     setRequestedDocuments([]);
     setPurpose("");
     setOrNumber("");
@@ -72,10 +66,6 @@ function Document() {
 
   const handleSubmit = async () => {
     const requestData = {
-      employee_id: employeeId,
-      firstName,
-      middleName,
-      lastName,
       requestedDocuments: requestedDocuments.join(","), // Join the array into a comma-separated string
       purpose,
       orNumber,
@@ -95,14 +85,10 @@ function Document() {
       setOpenSnackbar(true);
 
       // Optionally, clear form fields if needed
-      setEmployeeId("");
-      setFirstName("");
-      setMiddleName("");
-      setLastName("");
       setRequestedDocuments([]);
       setPurpose("");
       setOrNumber("");
-      setNumCopies(0);
+      setNumCopies(1);
       setOtherDocument("");
       setDateOfRequest("");
 
@@ -156,36 +142,6 @@ function Document() {
               </MDBox>
               <MDBox p={3}>
                 <Grid container spacing={2}>
-                  {/* First Name */}
-                  <Grid item xs={12} md={6}>
-                    <MDBox mb={1}>
-                      <MDTypography variant="caption" fontWeight="medium" color="text">
-                        First Name
-                      </MDTypography>
-                      <MDInput
-                        fullWidth
-                        sx={inputStyle}
-                        value={firstName}
-                        onChange={(e) => setFirstName(e.target.value)}
-                      />
-                    </MDBox>
-                  </Grid>
-
-                  {/* Last Name */}
-                  <Grid item xs={12} md={6}>
-                    <MDBox mb={1}>
-                      <MDTypography variant="caption" fontWeight="medium" color="text">
-                        Last Name
-                      </MDTypography>
-                      <MDInput
-                        fullWidth
-                        sx={inputStyle}
-                        value={lastName}
-                        onChange={(e) => setLastName(e.target.value)}
-                      />
-                    </MDBox>
-                  </Grid>
-
                   {/* Date of Request */}
                   <Grid item xs={12} md={6}>
                     <MDBox mb={1}>
