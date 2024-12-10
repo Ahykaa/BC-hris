@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\PersonalInfoController;
 use App\Http\Controllers\RegistrationController;
@@ -49,6 +50,9 @@ Route::middleware('auth:sanctum')->group(function () {
             'documents' => $documentRequests,
         ]);
     });
+
+    //Get employee
+    Route::get('/employees', [EmployeeController::class, 'index']);
 
     // Route for registration
     Route::post('/register', [RegistrationController::class, 'store']);
