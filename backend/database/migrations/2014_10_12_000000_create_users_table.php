@@ -14,7 +14,9 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $employee = 'employee';
             $admin = 'admin';
-            $roleEnum = [$employee, $admin];
+            $adminCompre = 'adminCompre';
+            $superAdmin = 'superAdmin';
+            $roleEnum = [$employee, $admin, $superAdmin, $adminCompre ];
 
             $table->id();
             $table->string('firstName');
