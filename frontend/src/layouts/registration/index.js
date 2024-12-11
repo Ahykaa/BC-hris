@@ -1,85 +1,101 @@
-import { useState, useEffect } from "react";
-import axiosInstance from "services/axiosInstance";
+import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types"; // Import PropTypes
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
-import Snackbar from "@mui/material/Snackbar";
-import Alert from "@mui/material/Alert";
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Button,
+  IconButton,
+} from "@mui/material";
+import AddIcon from "@mui/icons-material/Add"; // Import Add icon for the button
+import Visibility from "@mui/icons-material/Visibility"; // Import the visibility icon
 
 // BCHRIS React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-import MDInput from "components/MDInput";
-import MDButton from "components/MDButton";
+import DataTable from "examples/Tables/DataTable";
 
 // BCHRIS React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import { useNavigate } from "react-router-dom";
 
-function Registration() {
+// Axios instance for API requests
+import axiosInstance from "services/axiosInstance";
+import { useNavigate } from "react-router-dom"; // Import useNavigate for navigation
+import Registration from "./create"; // Import Registration component
+
+const capitalizeFirstLetter = (str) => {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+
+function RegistrationList() {
+  const [employees, setEmployees] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [open, setOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
   const navigate = useNavigate(); // Initialize navigate
-  const [formData, setFormData] = useState({
-    employee_id: "",
-    firstName: "",
-    lastName: "",
-    middleName: "",
-    date_started: "",
-    dept_id: "",
-    position: "",
-    username: "",
-    password: "",
-  });
 
-  const [departments, setDepartments] = useState([]);
-  const [openSnackbar, setOpenSnackbar] = useState(false); // Snackbar visibility
-
-  // Fetch departments on component mount
   useEffect(() => {
-    const fetchDepartments = async () => {
+    const fetchEmployees = async () => {
       try {
-        const response = await axiosInstance.get("/departments");
-        if (response.status === 200) {
-          setDepartments(response.data); // Store departments in state
-        }
+        const response = await axiosInstance.get("/employees");
+        setEmployees(
+          response.data.map((employee) => ({
+            "employee id": employee.employee_id,
+            "last name": capitalizeFirstLetter(employee.lastName),
+            "first name": capitalizeFirstLetter(employee.firstName),
+            position: capitalizeFirstLetter(employee.position || "-"),
+            department: capitalizeFirstLetter(employee.department?.name || "-"),
+            role: capitalizeFirstLetter(employee.role),
+          }))
+        );
+        setIsLoading(false);
       } catch (error) {
-        console.error("Error fetching departments:", error);
+        console.error("Error fetching employees:", error);
+        setIsLoading(false);
       }
     };
 
-    fetchDepartments();
+    fetchEmployees();
   }, []);
 
-  const handleInputChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+  const handleRowClick = (request) => {
+    setSelectedRequest(request);
+    setOpen(true); // Open the modal
   };
 
-  const handleSubmit = async () => {
-    try {
-      const response = await axiosInstance.post("/register", formData); // Updated API endpoint to /register
-      if (response.status === 200 || response.status === 201) {
-        // Show Snackbar instead of alert
-        setOpenSnackbar(true);
-        console.log("Response:", response.data);
-
-        // Redirect after a short delay
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 2000); // Delay of 2 seconds before redirect
-      } else {
-        alert("Failed to register employee. Please try again.");
-      }
-    } catch (error) {
-      console.error("Error registering employee:", error);
-      alert("An error occurred. Please try again.");
-    }
+  const handleCloseModal = () => {
+    setOpen(false);
+    setSelectedRequest(null); // Clear selected request
   };
 
-  const handleCancel = () => {
-    navigate("/dashboard"); // Redirect to dashboard on cancel
+  const handleCreateRegistration = () => {
+    navigate("/registration/create");
   };
+
+  const columns = [
+    { Header: "employee id", accessor: "employee id", align: "left" },
+    { Header: "last name", accessor: "last name", align: "left" },
+    { Header: "first name", accessor: "first name", align: "left" },
+    { Header: "position", accessor: "position", align: "left" },
+    { Header: "department", accessor: "department", align: "left" },
+    { Header: "role", accessor: "role", align: "left" },
+    {
+      Header: "Actions",
+      accessor: "view", // New column for the action button
+      Cell: ({ row }) => (
+        <IconButton onClick={() => handleRowClick(row.original)}>
+          <Visibility /> {/* Use the Visibility icon */}
+        </IconButton>
+      ),
+      align: "center",
+    },
+  ];
 
   return (
     <DashboardLayout>
@@ -94,150 +110,53 @@ function Registration() {
                 py={3}
                 px={2}
                 variant="gradient"
-                bgColor="info"
+                bgColor="success" // Change to "success" for green gradient
                 borderRadius="lg"
-                coloredShadow="info"
+                coloredShadow="success" // Change to "success" for green shadow
+                display="flex"
+                justifyContent="space-between"
+                alignItems="center"
               >
                 <MDTypography variant="h6" color="white">
-                  Registration
+                  Registration List
                 </MDTypography>
+                <Button
+                  variant="contained"
+                  style={{ color: "white", backgroundColor: "#4caf50" }} // Set font color to white and green background
+                  startIcon={<AddIcon />}
+                  onClick={handleCreateRegistration}
+                >
+                  Create Registration
+                </Button>
               </MDBox>
+
               <MDBox p={3}>
-                <MDTypography variant="h6" fontWeight="medium">
-                  EMPLOYEE REGISTRATION
-                </MDTypography>
-                <Grid container spacing={3} mt={2}>
-                  <Grid item xs={12} md={4}>
-                    <MDInput
-                      label="Employee ID"
-                      fullWidth
-                      value={formData.employee_id}
-                      onChange={(e) => handleInputChange("employee_id", e.target.value)}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} md={4}>
-                    <MDInput
-                      label="Last Name"
-                      fullWidth
-                      value={formData.lastName}
-                      onChange={(e) => handleInputChange("lastName", e.target.value)}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <MDInput
-                      label="First Name"
-                      fullWidth
-                      value={formData.firstName}
-                      onChange={(e) => handleInputChange("firstName", e.target.value)}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <MDInput
-                      label="Middle Name"
-                      fullWidth
-                      value={formData.middleName}
-                      onChange={(e) => handleInputChange("middleName", e.target.value)}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} md={4}>
-                    <Select
-                      label="Department"
-                      fullWidth
-                      value={formData.dept_id}
-                      onChange={(e) => handleInputChange("dept_id", e.target.value)}
-                      displayEmpty
-                      sx={{
-                        padding: "10px",
-                        fontSize: "1rem",
-                        "& .MuiOutlinedInput-root": {
-                          borderRadius: "8px",
-                        },
-                      }}
-                    >
-                      <MenuItem value="" disabled>
-                        Select Department
-                      </MenuItem>
-                      {departments.length > 0 ? (
-                        departments.map((dept) => (
-                          <MenuItem key={dept.id} value={dept.id}>
-                            {dept.name}
-                          </MenuItem>
-                        ))
-                      ) : (
-                        <MenuItem value="">Loading...</MenuItem>
-                      )}
-                    </Select>
-                  </Grid>
-
-                  <Grid item xs={12} md={4}>
-                    <MDInput
-                      label="Position"
-                      fullWidth
-                      value={formData.position}
-                      onChange={(e) => handleInputChange("position", e.target.value)}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <MDInput
-                      label="Date Started"
-                      type="date"
-                      InputLabelProps={{ shrink: true }}
-                      fullWidth
-                      value={formData.date_started}
-                      onChange={(e) => handleInputChange("date_started", e.target.value)}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <MDInput
-                      label="Username"
-                      fullWidth
-                      value={formData.username}
-                      onChange={(e) => handleInputChange("username", e.target.value)}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <MDInput
-                      label="Password"
-                      fullWidth
-                      value={formData.password}
-                      onChange={(e) => handleInputChange("password", e.target.value)}
-                    />
-                  </Grid>
-                </Grid>
-
-                <MDBox mt={3} display="flex" justifyContent="flex-end" gap={2}>
-                  <MDButton variant="gradient" color="info" onClick={handleSubmit}>
-                    Register
-                  </MDButton>
-                  <MDButton variant="outlined" color="error" onClick={handleCancel}>
-                    Cancel
-                  </MDButton>
-                </MDBox>
+                {isLoading ? (
+                  <MDTypography variant="subtitle1">Loading...</MDTypography>
+                ) : (
+                  <DataTable
+                    table={{ columns, rows: employees }}
+                    showTotalEntries={false}
+                    isSorted={false}
+                    noEndBorder
+                    entriesPerPage={false}
+                  />
+                )}
               </MDBox>
             </Card>
           </Grid>
         </Grid>
       </MDBox>
       <Footer />
-
-      {/* Snackbar for success */}
-      <Snackbar
-        open={openSnackbar}
-        autoHideDuration={6000}
-        onClose={() => setOpenSnackbar(false)}
-        anchorOrigin={{
-          vertical: "top", // Position it at the top
-          horizontal: "center", // Position it at the center horizontally
-        }}
-      >
-        <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: "100%" }}>
-          Employee is successfully registered!
-        </Alert>
-      </Snackbar>
     </DashboardLayout>
   );
 }
 
-export default Registration;
+// PropTypes validation for the row prop
+RegistrationList.propTypes = {
+  row: PropTypes.shape({
+    original: PropTypes.object.isRequired,
+  }),
+};
+
+export default RegistrationList;
