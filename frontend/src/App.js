@@ -39,6 +39,8 @@ import brandWhite from "assets/images/logo-ct.png";
 import brandDark from "assets/images/logo-ct-dark.png";
 import { RoleContext } from "context/RoleContext";
 import { CircularProgress } from "@mui/material";
+import adminCompeRoutes from "routes/adminCompeRoutes";
+import superAdminRoutes from "routes/superAdminRoutes";
 
 // Dummy authentication state (replace with your actual auth logic)
 const isAuthenticated = () => {
@@ -79,6 +81,10 @@ export default function App() {
       setRoutes(adminRoutes); // Set admin routes when role is 'admin'
     } else if (role === "employee") {
       setRoutes(employeeRoutes); // Set employee routes when role is 'employee'
+    } else if (role === "adminCompre") {
+      setRoutes(adminCompeRoutes);
+    } else if (role === "superAdmin") {
+      setRoutes(superAdminRoutes);
     }
   }, [role]);
 
@@ -130,6 +136,10 @@ export default function App() {
         setRoutes(adminRoutes); // Set admin routes
       } else if (role === "employee") {
         setRoutes(employeeRoutes); // Set employee routes
+      } else if (role === "adminCompre") {
+        setRoutes(adminCompeRoutes);
+      } else if (role === "superAdmin") {
+        setRoutes(superAdminRoutes);
       }
     };
     getRoutesForRole();
