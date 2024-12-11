@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\FamilyBackgroundController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\PersonalInfoController;
 use App\Http\Controllers\RegistrationController;
@@ -31,6 +32,9 @@ Route::middleware('auth:sanctum')->group(function () {
     // Resource routes for Leave and Profile
     Route::resource('leave', LeaveController::class);
     Route::resource('profile', PersonalInfoController::class);
+
+       // Resource routes for Family Background
+       Route::resource('familyBackgrounds', FamilyBackgroundController::class);
 
     // Route for storing documents
     Route::post('/documents', [DocumentController::class, 'store']);

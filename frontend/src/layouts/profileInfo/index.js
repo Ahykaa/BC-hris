@@ -53,9 +53,24 @@ function ProfileInfo() {
 
   const [familyBackground, setFamilyBackground] = useState({
     fatherName: "",
+    father_occupation: "",
+    father_contact_number: "",
+    father_date_of_birth: "",
+
     motherName: "",
+    mother_occupation: "",
+    mother_contact_number: "",
+    mother_date_of_birth: "",
+
     spouseName: "",
-    children: [],
+    spouse_occupation: "",
+    spouse_contact_number: "",
+    spouse_date_of_birth: "",
+
+    emergency_contact_name: "",
+    emergency_contact_address: "",
+    emergency_contact_number: "",
+    emergency_contact_relationship: "",
   });
 
   // Handle input changes for both pages
@@ -86,21 +101,43 @@ function ProfileInfo() {
   };
   const handleSubmit = async () => {
     try {
-      const response = await axiosInstance.post("/profile", formData); // POST request to the backend API
-      if (response.status === 200 || response.status === 201) {
+      // Submit profile data
+      const profileResponse = await axiosInstance.post("/profile", formData);
+      if (profileResponse.status === 200 || profileResponse.status === 201) {
         alert("Profile saved successfully!");
-        console.log("Response:", response.data);
-
-        // Redirect after a short delay
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 2000); // Delay of 2 seconds before redirect
+        console.log("Profile Response:", profileResponse.data);
       } else {
         alert("Failed to save profile. Please try again.");
+        return; // Stop execution if profile submission fails
       }
+
+      // Submit family background data
+      const familyBackgroundResponse = await axiosInstance.post(
+        "/familyBackgrounds",
+        familyBackground
+      );
+      if (familyBackgroundResponse.status === 200 || familyBackgroundResponse.status === 201) {
+        alert("Family background saved successfully!");
+        console.log("Family Background Response:", familyBackgroundResponse.data);
+      } else {
+        alert("Failed to save family background. Please try again.");
+        return; // Stop execution if family background submission fails
+      }
+
+      // Redirect after a short delay if both submissions are successful
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 2000); // Delay of 2 seconds before redirect
     } catch (error) {
-      console.error("Error saving profile:", error);
-      alert("An error occurred. Please try again.");
+      console.error("Error saving data:", error);
+
+      // Show detailed error if available
+      if (error.response && error.response.data) {
+        console.error("Server Response:", error.response.data);
+        alert(`Error: ${error.response.data.message}`);
+      } else {
+        alert("An error occurred. Please try again.");
+      }
     }
   };
 

@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('family_backgrounds', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('personal_info_id');
+            $table->unsignedBigInteger('personal_info_id')->nullable(); // Nullable by default
             $table->string('father_name')->nullable();
             $table->string('father_occupation')->nullable();
             $table->string('father_contact_number')->nullable();
