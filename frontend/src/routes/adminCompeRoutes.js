@@ -1,5 +1,6 @@
-import Dashboard from "layouts/dashboard";
+import Dashboard from "layouts/adminCompe";
 import SignIn from "layouts/authentication/sign-in";
+import EmployeeList from "layouts/adminCompe/adminCompeEmployeeList"; // Import the new Employee List component
 import Icon from "@mui/material/Icon";
 
 const adminCompeRoutes = [
@@ -10,6 +11,14 @@ const adminCompeRoutes = [
     icon: <Icon fontSize="small">home</Icon>,
     route: "/dashboard",
     component: <Dashboard />,
+  },
+  {
+    type: "collapse",
+    name: "Employee List", // New button for Employee List
+    key: "employee-list",
+    icon: <Icon fontSize="small">people</Icon>, // Icon representing a list of people
+    route: "/employee-list",
+    component: <EmployeeList />, // Component to render for Employee List
   },
   {
     type: "collapse",
