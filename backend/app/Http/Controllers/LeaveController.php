@@ -61,7 +61,7 @@ class LeaveController extends Controller
     }
 
     /**
-     * Display all requests for the authenticated user.
+     * Display all leave requests for the authenticated user.
      */
     public function getEmployeeRequests()
     {
@@ -69,6 +69,17 @@ class LeaveController extends Controller
 
         // Fetch all leave requests for the authenticated employee
         $leaveRequests = Leave::where('employee_id', $userId)->get();
+
+        return response()->json($leaveRequests, 200);
+    }
+
+    /**
+     * Display all leave requests (for admin view).
+     */
+    public function getAllRequests()
+    {
+        // Fetch all leave requests (admin view)
+        $leaveRequests = Leave::all();
 
         return response()->json($leaveRequests, 200);
     }
