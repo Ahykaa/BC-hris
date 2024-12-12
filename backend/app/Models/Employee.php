@@ -44,6 +44,6 @@ class Employee extends Model
 
     public function leaves()
     {
-        return $this->hasMany(Leave::class, 'employee_id', 'id');
+        return $this->hasMany(Leave::class, 'employee_id', 'employee_id');
     }
 }

@@ -155,12 +155,12 @@ function Leave() {
                 py={3}
                 px={2}
                 variant="gradient"
-                bgColor="info"
+                bgColor="success" // Change to "success" for green gradient
                 borderRadius="lg"
-                coloredShadow="info"
+                coloredShadow="success" // Change to "success" for green shadow
               >
                 <MDTypography variant="h6" color="white">
-                  Leave Requests
+                  Leave Request
                 </MDTypography>
               </MDBox>
 

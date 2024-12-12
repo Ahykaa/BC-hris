@@ -10,6 +10,11 @@ import MDTypography from "components/MDTypography";
 import TimelineItem from "examples/Timeline/TimelineItem";
 
 function OrdersOverview() {
+  // Temporarily return null to hide the component
+  return null;
+
+  // Original code can remain here for later use
+  /*
   return (
     <Card sx={{ height: "100%" }}>
       <MDBox pt={3} px={3}>
@@ -64,6 +69,7 @@ function OrdersOverview() {
       </MDBox>
     </Card>
   );
+  */
 }
 
 export default OrdersOverview;

@@ -98,9 +98,9 @@ function Request() {
   };
 
   const columns = [
-    { Header: "Date Request", accessor: "dateRequest", align: "left" },
-    { Header: "Request Type", accessor: "requestType", align: "left" },
-    { Header: "Details", accessor: "details", align: "left" },
+    { Header: "Date Request", accessor: "dateRequest", align: "center" },
+    { Header: "Request Type", accessor: "requestType", align: "center" },
+    { Header: "Details", accessor: "details", align: "center" },
     { Header: "Reason/Purpose", accessor: "reason", align: "center" },
     { Header: "Status", accessor: "status", align: "center" },
     { Header: "Comments", accessor: "comments", align: "center" },
@@ -129,14 +129,15 @@ function Request() {
                 py={3}
                 px={2}
                 variant="gradient"
-                bgColor="info"
+                bgColor="success" // Change to "success" for green gradient
                 borderRadius="lg"
-                coloredShadow="info"
+                coloredShadow="success" // Change to "success" for green shadow
               >
                 <MDTypography variant="h6" color="white">
                   Transaction List
                 </MDTypography>
               </MDBox>
+
               <MDBox p={3}>
                 {isLoading ? (
                   <MDTypography variant="subtitle1">Loading...</MDTypography>

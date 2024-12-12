@@ -3,6 +3,7 @@ import SignIn from "layouts/authentication/sign-in";
 import Icon from "@mui/material/Icon";
 import RegistrationList from "layouts/registration";
 import Registration from "layouts/registration/create"; // Ensure the create route exists
+import Request from "layouts/document/request";
 
 const adminRoutes = [
   {
@@ -28,6 +29,14 @@ const adminRoutes = [
     icon: <Icon fontSize="small">add</Icon>,
     route: "/registration/create", // This route should still work
     component: <Registration />, // Registration component will be loaded here
+  },
+  {
+    type: "collapse",
+    name: "Document Request",
+    key: "documentRequest",
+    icon: <Icon fontSize="small">article</Icon>,
+    route: "/document/request",
+    component: <Request />,
   },
   {
     type: "collapse",
