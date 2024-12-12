@@ -78,11 +78,13 @@ class LeaveController extends Controller
      */
     public function getAllRequests()
     {
-        // Fetch all leave requests (admin view)
-        $leaveRequests = Leave::all();
+        // Fetch all leave requests with user data (eager load user details)
+        $leaveRequests = Leave::with('user')->get();
 
+        // Return the leave requests as JSON response
         return response()->json($leaveRequests, 200);
     }
+    
 
     /**
      * Display the specified resource.

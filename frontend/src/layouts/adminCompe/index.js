@@ -53,10 +53,9 @@ function AdminLeaveRequests() {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await axiosInstance.get("/admin/requests"); // Fetch all requests for admin
+        const response = await axiosInstance.get("/admin/requests");
         const leaveRequests = response.data;
 
-        // Process the leave data as needed
         const leaveData = leaveRequests.map((leave) => ({
           created_at: leave.created_at,
           dateRequest: formatDate(leave.created_at),
@@ -64,6 +63,8 @@ function AdminLeaveRequests() {
           reason: capitalizeFirstLetter(leave.reason),
           status: leave.status,
           comments: capitalizeFirstLetter(leave.others || "-"),
+          // Add first and last name from the user relationship
+          fullName: leave.user ? `${leave.user.firstName} ${leave.user.lastName}` : "N/A",
           fullDetails: leave,
         }));
 
@@ -90,6 +91,7 @@ function AdminLeaveRequests() {
 
   const columns = [
     { Header: "Date Request", accessor: "dateRequest", align: "left" },
+    { Header: "Full Name", accessor: "fullName", align: "left" },
     { Header: "Nature of Leave", accessor: "natureOfLeave", align: "left" },
     { Header: "Reason/Purpose", accessor: "reason", align: "center" },
     { Header: "Comments", accessor: "comments", align: "center" },
