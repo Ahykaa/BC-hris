@@ -38,19 +38,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/documents', [DocumentController::class, 'store']);
 
     // Route to get all requests (leave & document) for an authenticated employee
-    Route::get('/employee/requests', function () {
-        $userId = auth()->user()->id;
-
-        // Fetch the leave and document requests for the authenticated employee
-        $leaveRequests = Leave::where('employee_id', $userId)->get();
-        $documentRequests = Document::where('employee_id', $userId)->get();
-
-        // Return the leave and document data as JSON
-        return response()->json([
-            'leaves' => $leaveRequests,
-            'documents' => $documentRequests,
-        ]);
-    });
+    Route::get('/employee/requests', [EmployeeController::class, 'getRequests']);
 
     // get all document request
     Route::get('/documents/all', [DocumentController::class, 'getAllRequests']);
