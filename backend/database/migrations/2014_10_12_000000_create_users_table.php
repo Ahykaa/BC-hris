@@ -29,7 +29,7 @@ return new class extends Migration
             $table->unsignedBigInteger('dept_id');
             $table->string('position')->nullable();
             $table->foreign('dept_id')->references('id')->on('departments')->onUpdate('cascade');
-            $table->integer('employee_id')->unique()->unsigned();
+            $table->unsignedBigInteger('employee_id')->unique(); 
 
             $table->enum('role', $roleEnum)->default($employee);
             $table->date('date_started')->nullable();

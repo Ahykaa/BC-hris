@@ -41,7 +41,7 @@ class LeaveController extends Controller
 
         // Create the leave record
         $leave = new Leave();
-        $leave->employee_id = auth()->user()->id; // Assuming you're using auth for employee ID
+        $leave->employee_id = auth()->user()->employee_id; // Assuming you're using auth for employee ID
         $leave->natureOfLeave = $request->leavetype;
         $leave->reason = $request->reasonforleave;
         $leave->numberOfDays = $request->numberofdays;

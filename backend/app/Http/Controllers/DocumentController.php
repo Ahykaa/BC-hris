@@ -28,7 +28,7 @@ class DocumentController extends Controller
 
         // Create the document record
         $document = new Document();
-        $document->employee_id = $user->id;
+        $document->employee_id = $user->employee_id;
         $document->firstName = $user->firstName; // Assuming 'firstName' is stored in the 'users' table
         $document->middleName = $user->middleName; // If middle name exists
         $document->lastName = $user->lastName; // Assuming 'lastName' is stored in the 'users' table
