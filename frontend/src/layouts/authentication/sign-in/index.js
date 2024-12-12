@@ -66,9 +66,9 @@ function Basic() {
       <Card>
         <MDBox
           variant="gradient"
-          bgColor="info"
+          bgColor="success"
           borderRadius="lg"
-          coloredShadow="info"
+          coloredShadow="success"
           mx={2}
           mt={-3}
           p={2}
@@ -76,7 +76,7 @@ function Basic() {
           textAlign="center"
         >
           <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
-            Sign in
+            BC HRIS
           </MDTypography>
         </MDBox>
         <MDBox pt={4} pb={3} px={3}>
@@ -116,8 +116,8 @@ function Basic() {
               </MDTypography>
             </MDBox>
             <MDBox mt={4} mb={1}>
-              <MDButton type="submit" variant="gradient" color="info" fullWidth>
-                Sign in
+              <MDButton type="submit" variant="gradient" color="success" fullWidth>
+                Log in
               </MDButton>
             </MDBox>
           </MDBox>

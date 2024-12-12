@@ -22,10 +22,10 @@ class DocumentController extends Controller
             'otherDocument' => 'nullable|string',
             'dateOfRequest' => 'required|date',
         ]);
-    
+
         // Get the authenticated user's first and last name
         $user = auth()->user();
-    
+
         // Create the document record
         $document = new Document();
         $document->employee_id = $user->id;
@@ -38,13 +38,13 @@ class DocumentController extends Controller
         $document->numCopies = $validated['numCopies'];
         $document->otherDocument = $validated['otherDocument'];
         $document->dateOfRequest = $validated['dateOfRequest'];
-    
+
         // Save the document record
         $document->save();
-    
+
         return response()->json($document, 201); // Return the created document record
     }
-    
+
 
     /**
      * Display all requests for the authenticated user.
@@ -56,6 +56,15 @@ class DocumentController extends Controller
         // Fetch all document requests for the authenticated employee
         $documentRequests = Document::where('employee_id', $userId)->get();
 
+        return response()->json($documentRequests, 200);
+    }
+
+    public function getAllRequests()
+    {
+        // Fetch all document requests along with user details (first name and last name)
+        $documentRequests = Document::with('user:id,firstName,lastName')->get();
+
+        // Return the fetched data as JSON
         return response()->json($documentRequests, 200);
     }
 }

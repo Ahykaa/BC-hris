@@ -42,10 +42,4 @@ class PersonalInfo extends Model
     {
         return $this->belongsTo(Department::class, 'dept_id');
     }
-
-    public function familyBackground()
-    {
-        return $this->hasOne(FamilyBackground::class);
-    }
-
 }

@@ -6,6 +6,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\PersonalInfoController;
 use App\Http\Controllers\RegistrationController;
+use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Models\Leave;
@@ -51,8 +52,14 @@ Route::middleware('auth:sanctum')->group(function () {
         ]);
     });
 
-    //Get employee
+    // get all document request
+    Route::get('/documents/all', [DocumentController::class, 'getAllRequests']);
+
+    //Get employee list for admin dashboard
     Route::get('/employees', [EmployeeController::class, 'index']);
+
+    // Get the logged-in user's profile
+    Route::get('/user/profile', [UserController::class, 'profile']);
 
     // Route for registration
     Route::post('/register', [RegistrationController::class, 'store']);
@@ -61,4 +68,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/departments', function () {
         return response()->json(Department::all());  // Get all departments
     });
+
+    // Get all document request for admin
+    Route::get('/documents/all', [DocumentController::class, 'getAllRequests']);
 });
