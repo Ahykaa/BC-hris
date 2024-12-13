@@ -1,28 +1,23 @@
+import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
-
-// BCHRIS React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import MDInput from "components/MDInput";
 import MDButton from "components/MDButton";
-
-// BCHRIS React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
-import { useState } from "react";
 import axiosInstance from "services/axiosInstance";
 import { useNavigate } from "react-router-dom";
 
 function ProfileInfo() {
-  const navigate = useNavigate(); // Initialize navigate
-
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    employee_id: "",
     prefix: "",
+    employee_id: "",
     firstName: "",
     lastName: "",
     middleName: "",
@@ -35,7 +30,6 @@ function ProfileInfo() {
     email: "",
     dept_id: "",
     position: "",
-    type: "",
     houseNumber: "",
     barangay: "",
     city: "",
@@ -48,48 +42,50 @@ function ProfileInfo() {
     sss_no: "",
     prc_id: "",
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await axiosInstance.get("/user/profile");
+        const userData = response.data.data;
+
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          ...userData,
+          prefix: userData.prefix || prevFormData.prefix,
+        }));
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async () => {
+    if (isSubmitting) return;
+
+    setIsSubmitting(true); // Disable the button
+
     try {
-      const response = await axiosInstance.post("/profile", formData); // POST request to the backend API
+      const response = await axiosInstance.post("/profile", formData);
       if (response.status === 200 || response.status === 201) {
         alert("Profile saved successfully!");
-        console.log("Response:", response.data);
-
-        // Auto-fill fields with the returned employee data
-        const { employee_id, firstName, lastName, middleName, dept_id, position } =
-          response.data.data;
-        setFormData((prev) => ({
-          ...prev,
-          employee_id: employee_id,
-          firstName: firstName,
-          lastName: lastName,
-          middleName: middleName,
-          dept_id: dept_id,
-          position: position,
-        }));
-
-        // Redirect after a short delay
         setTimeout(() => {
           navigate("/dashboard");
-        }, 2000); // Delay of 2 seconds before redirect
-      } else {
-        alert("Failed to save profile. Please try again.");
+        }, 2000);
       }
     } catch (error) {
-      console.error("Error saving profile:", error);
-      alert("An error occurred. Please try again.");
+      console.error("Error saving profile:", error.response?.data || error.message);
+      alert(`Error: ${error.response?.data?.message || "An error occurred. Please try again."}`);
+    } finally {
+      setIsSubmitting(false); // Re-enable the button if submission fails
     }
-  };
-
-  const [reason, setReason] = useState("");
-
-  const handleReasonChange = (event) => {
-    setReason(event.target.value);
   };
 
   return (
@@ -121,12 +117,22 @@ function ProfileInfo() {
                 </MDTypography>
                 <Grid container spacing={3} mt={2}>
                   <Grid item xs={12} md={4}>
-                    <MDInput
-                      label="Employee ID"
-                      fullWidth
-                      value={formData.employee_id}
-                      onChange={(e) => handleInputChange("employee_id", e.target.value)}
-                    />
+                    <MDInput label="Employee ID" fullWidth value={formData.employee_id} disabled />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <MDInput label="Department" fullWidth value={formData.dept_id} disabled />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <MDInput label="Position" fullWidth value={formData.position} disabled />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <MDInput label="First Name" fullWidth value={formData.firstName} disabled />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <MDInput label="Middle Name" fullWidth value={formData.middleName} disabled />
+                  </Grid>
+                  <Grid item xs={12} md={4}>
+                    <MDInput label="Last Name" fullWidth value={formData.lastName} disabled />
                   </Grid>
                   <Grid item xs={12} md={4}>
                     <MDBox mb={3}>
@@ -147,31 +153,6 @@ function ProfileInfo() {
                         <MenuItem value="Rev.">Rev.</MenuItem>
                       </Select>
                     </MDBox>
-                  </Grid>
-
-                  <Grid item xs={12} md={4}>
-                    <MDInput
-                      label="First Name"
-                      fullWidth
-                      value={formData.firstName}
-                      onChange={(e) => handleInputChange("firstName", e.target.value)}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <MDInput
-                      label="Last Name"
-                      fullWidth
-                      value={formData.lastName}
-                      onChange={(e) => handleInputChange("lastName", e.target.value)}
-                    />
-                  </Grid>
-                  <Grid item xs={12} md={4}>
-                    <MDInput
-                      label="Middle Name"
-                      fullWidth
-                      value={formData.middleName}
-                      onChange={(e) => handleInputChange("middleName", e.target.value)}
-                    />
                   </Grid>
                   <Grid item xs={12} md={4}>
                     <MDInput
@@ -262,26 +243,6 @@ function ProfileInfo() {
                       fullWidth
                       value={formData.email}
                       onChange={(e) => handleInputChange("email", e.target.value)}
-                    />
-                  </Grid>
-                </Grid>
-
-                <Grid container spacing={3} mt={2}>
-                  <Grid item xs={12} md={4}>
-                    <MDInput
-                      label="Department"
-                      fullWidth
-                      value={formData.dept_id}
-                      onChange={(e) => handleInputChange("dept_id", e.target.value)}
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} md={4}>
-                    <MDInput
-                      label="Position"
-                      fullWidth
-                      value={formData.position}
-                      onChange={(e) => handleInputChange("position", e.target.value)}
                     />
                   </Grid>
                 </Grid>
