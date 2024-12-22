@@ -28,7 +28,7 @@ function ProfileInfo() {
     citizenship: "",
     birthday: "",
     email: "",
-    dept_id: "",
+    department: "",
     position: "",
     houseNumber: "",
     barangay: "",
@@ -54,6 +54,7 @@ function ProfileInfo() {
           ...prevFormData,
           ...userData,
           prefix: userData.prefix || prevFormData.prefix,
+          department: userData.department || "",
         }));
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -120,7 +121,7 @@ function ProfileInfo() {
                     <MDInput label="Employee ID" fullWidth value={formData.employee_id} disabled />
                   </Grid>
                   <Grid item xs={12} md={4}>
-                    <MDInput label="Department" fullWidth value={formData.dept_id} disabled />
+                    <MDInput label="Department" fullWidth value={formData.department} disabled />
                   </Grid>
                   <Grid item xs={12} md={4}>
                     <MDInput label="Position" fullWidth value={formData.position} disabled />
