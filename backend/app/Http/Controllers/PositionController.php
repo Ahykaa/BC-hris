@@ -14,7 +14,10 @@ class PositionController extends Controller
      */
     public function index()
     {
-        //
+        $positions = Position::all();
+
+        // Return the positions as a JSON response
+        return response()->json($positions, 200);
     }
 
     /**
@@ -81,5 +84,27 @@ class PositionController extends Controller
     public function destroy(Position $position)
     {
         //
+    }
+    
+    public function getPositionsByDepartment(Request $request)
+    {
+        $departmentId = $request->query('department_id');
+
+        if (!$departmentId) {
+            return response()->json([
+                'message' => 'Department ID is required.',
+            ], 400);
+        }
+
+        $positions = Position::where('department_id', $departmentId)->get();
+
+        if ($positions->isEmpty()) {
+            return response()->json([
+                'message' => 'No positions found for the selected department.',
+                'data' => [],
+            ], 404);
+        }
+
+        return response()->json($positions, 200);
     }
 }

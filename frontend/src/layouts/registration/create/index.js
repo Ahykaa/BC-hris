@@ -28,12 +28,13 @@ function Registration() {
     middleName: "",
     date_started: "",
     dept_id: "",
-    position: "",
+    position_id: "", // Updated to use position_id
     username: "",
     password: "",
   });
 
   const [departments, setDepartments] = useState([]);
+  const [positions, setPositions] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false); // Snackbar visibility
 
   // Fetch departments on component mount
@@ -52,17 +53,40 @@ function Registration() {
     fetchDepartments();
   }, []);
 
+  // Fetch positions whenever dept_id changes
+  useEffect(() => {
+    if (formData.dept_id) {
+      const fetchPositions = async () => {
+        try {
+          const response = await axiosInstance.get(
+            `/positionsbyDepartment?department_id=${formData.dept_id}`
+          );
+          if (response.status === 200) {
+            setPositions(response.data); // Store positions in state
+          } else {
+            setPositions([]); // Reset positions if no data
+          }
+        } catch (error) {
+          console.error("Error fetching positions:", error);
+          setPositions([]); // Reset positions on error
+        }
+      };
+
+      fetchPositions();
+    } else {
+      setPositions([]); // Reset positions if no department selected
+    }
+  }, [formData.dept_id]);
+
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async () => {
     try {
-      const response = await axiosInstance.post("/register", formData); // Updated API endpoint to /register
+      const response = await axiosInstance.post("/register", formData);
       if (response.status === 200 || response.status === 201) {
-        // Show Snackbar instead of alert
         setOpenSnackbar(true);
-        console.log("Response:", response.data);
 
         // Redirect after a short delay
         setTimeout(() => {
@@ -172,13 +196,35 @@ function Registration() {
                   </Grid>
 
                   <Grid item xs={12} md={4}>
-                    <MDInput
+                    <Select
                       label="Position"
                       fullWidth
-                      value={formData.position}
-                      onChange={(e) => handleInputChange("position", e.target.value)}
-                    />
+                      value={formData.position_id}
+                      onChange={(e) => handleInputChange("position_id", e.target.value)}
+                      displayEmpty
+                      sx={{
+                        padding: "10px",
+                        fontSize: "1rem",
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: "8px",
+                        },
+                      }}
+                    >
+                      <MenuItem value="" disabled>
+                        Select Position
+                      </MenuItem>
+                      {positions.length > 0 ? (
+                        positions.map((pos) => (
+                          <MenuItem key={pos.id} value={pos.id}>
+                            {pos.name}
+                          </MenuItem>
+                        ))
+                      ) : (
+                        <MenuItem value="">Select Position</MenuItem>
+                      )}
+                    </Select>
                   </Grid>
+
                   <Grid item xs={12} md={4}>
                     <MDInput
                       label="Date Started"

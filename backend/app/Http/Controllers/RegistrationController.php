@@ -24,7 +24,7 @@ class RegistrationController extends Controller
             'middleName' => 'nullable|string|max:255',
             'date_started' => 'required|date',
             'dept_id' => 'required|integer', // Ensure dept_id is an integer
-            'position' => 'nullable|string|max:255',
+            'position_id' => 'required|integer',
             'username' => 'required|string|max:255|unique:users',
             'email' => 'nullable|email|unique:users', // Ensure email is unique, nullable
             'password' => 'required|string|min:6', // Confirm password field
@@ -38,7 +38,7 @@ class RegistrationController extends Controller
         $user->middleName = $validatedData['middleName'];
         $user->date_started = $validatedData['date_started'];
         $user->dept_id = $validatedData['dept_id'];
-        $user->position = $validatedData['position'];
+        $user->position_id = $validatedData['position_id'];
         $user->username = $validatedData['username'];
 
         // Check if email is provided before assigning it

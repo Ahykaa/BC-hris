@@ -5,15 +5,26 @@ import MDButton from "components/MDButton";
 import DataTable from "examples/Tables/DataTable";
 import axiosInstance from "services/axiosInstance";
 import React, { useState, useEffect } from "react";
-import { CircularProgress } from "@mui/material";
 
 function EmployeeList() {
   const [employees, setEmployees] = useState([]);
+  const [positions, setPositions] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [loadingAction, setLoadingAction] = useState(null); // Track action-specific loading
 
   useEffect(() => {
-    const fetchEmployees = async () => {
+    // Function to fetch positions
+    const fetchPositions = async () => {
+      try {
+        const response = await axiosInstance.get("/positions");
+        console.log("Positions fetched:", response.data);
+        setPositions(response.data);
+      } catch (error) {
+        console.error("Error fetching positions:", error);
+      }
+    };
+
+    // Function to fetch employees
+    const fetchEmployees = async (positionsData) => {
       try {
         const response = await axiosInstance.get("/employees");
         const sortedEmployees = response.data.sort((a, b) => a.lastName.localeCompare(b.lastName));
@@ -23,7 +34,7 @@ function EmployeeList() {
             "employee id": employee.employee_id,
             "last name": employee.lastName,
             "first name": employee.firstName,
-            position: employee.position || "-",
+            position: getPositionTitle(employee.position_id, positionsData), // Pass positions data here
             department: employee.department?.name || "-",
             "date started": new Date(employee.date_started).toLocaleDateString(),
             action: (
@@ -46,36 +57,48 @@ function EmployeeList() {
             ),
           }))
         );
-        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching employees:", error);
+      }
+    };
+
+    // Fetch both positions and employees sequentially
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        await fetchPositions(); // Fetch positions
+        const positionsData = await axiosInstance.get("/positions"); // Ensure positions data is up-to-date
+        await fetchEmployees(positionsData.data); // Pass the positions data to employees fetch
+      } catch (error) {
+        console.error("Error loading data:", error);
+      } finally {
         setIsLoading(false);
       }
     };
 
-    fetchEmployees();
+    fetchData();
   }, []);
+
+  // Helper function to get position title
+  const getPositionTitle = (positionId, positionsData) => {
+    const position = positionsData.find((pos) => String(pos.id) === String(positionId));
+    return position ? position.name : "n/a";
+  };
 
   const handleView = (id) => {
     console.log(`View employee with ID: ${id}`);
-    setLoadingAction(id); // Set loading state for the action
-    // Add navigation or modal logic here
-    setTimeout(() => setLoadingAction(null), 1500); // Reset loading state (simulate async action)
   };
 
   const handleEdit = (id) => {
     console.log(`Edit employee with ID: ${id}`);
-    setLoadingAction(id); // Set loading state for the action
-    // Add navigation or modal logic here
-    setTimeout(() => setLoadingAction(null), 1500); // Reset loading state (simulate async action)
   };
 
   const columns = [
     { Header: "employee id", accessor: "employee id", align: "center" },
     { Header: "last name", accessor: "last name", align: "center" },
     { Header: "first name", accessor: "first name", align: "center" },
-    { Header: "position", accessor: "position", align: "center" },
     { Header: "department", accessor: "department", align: "center" },
+    { Header: "position", accessor: "position", align: "center" },
     { Header: "date started", accessor: "date started", align: "center" },
     { Header: "action", accessor: "action", align: "center" },
   ];

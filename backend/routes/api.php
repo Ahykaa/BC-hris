@@ -5,6 +5,7 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\PersonalInfoController;
+use App\Http\Controllers\PositionController;
 use App\Http\Controllers\RegistrationController;
 use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
@@ -63,4 +64,11 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Get all document request for admin
     Route::get('/documents/all', [DocumentController::class, 'getAllRequests']);
+
+    // Get position by department_id
+    Route::get('/positionsbyDepartment', [PositionController::class, 'getPositionsByDepartment']);
+
+    Route::get('/positions', [PositionController::class, 'index']);
+
+
 });
