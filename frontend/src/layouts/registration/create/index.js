@@ -4,6 +4,8 @@ import Grid from "@mui/material/Grid";
 import Card from "@mui/material/Card";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 
@@ -28,22 +30,25 @@ function Registration() {
     middleName: "",
     date_started: "",
     dept_id: "",
-    position_id: "", // Updated to use position_id
+    position_id: "",
     username: "",
     password: "",
+    role: "Employee", // Default role
   });
 
   const [departments, setDepartments] = useState([]);
   const [positions, setPositions] = useState([]);
   const [openSnackbar, setOpenSnackbar] = useState(false); // Snackbar visibility
 
-  // Fetch departments on component mount
+  const roles = ["employee", "admin", "adminCompre", "superAdmin"];
+
+  // Fetch departments
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
         const response = await axiosInstance.get("/departments");
         if (response.status === 200) {
-          setDepartments(response.data); // Store departments in state
+          setDepartments(response.data);
         }
       } catch (error) {
         console.error("Error fetching departments:", error);
@@ -53,7 +58,7 @@ function Registration() {
     fetchDepartments();
   }, []);
 
-  // Fetch positions whenever dept_id changes
+  // Fetch positions when dept_id changes
   useEffect(() => {
     if (formData.dept_id) {
       const fetchPositions = async () => {
@@ -62,36 +67,52 @@ function Registration() {
             `/positionsbyDepartment?department_id=${formData.dept_id}`
           );
           if (response.status === 200) {
-            setPositions(response.data); // Store positions in state
+            setPositions(response.data);
           } else {
-            setPositions([]); // Reset positions if no data
+            setPositions([]);
           }
         } catch (error) {
           console.error("Error fetching positions:", error);
-          setPositions([]); // Reset positions on error
+          setPositions([]);
         }
       };
 
       fetchPositions();
     } else {
-      setPositions([]); // Reset positions if no department selected
+      setPositions([]);
     }
   }, [formData.dept_id]);
 
+  // Auto-generate username and password
+  useEffect(() => {
+    if (formData.firstName && formData.lastName) {
+      const username = `${formData.firstName[0].toLowerCase()}.${formData.lastName.toLowerCase()}`;
+      setFormData((prev) => ({
+        ...prev,
+        username,
+        password: username, // Set initial password as the username
+      }));
+    }
+  }, [formData.firstName, formData.lastName]);
+
+  // Handle form input changes
   const handleInputChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
+  // Handle form submission
   const handleSubmit = async () => {
     try {
-      const response = await axiosInstance.post("/register", formData);
+      const response = await axiosInstance.post("/register", {
+        ...formData,
+        forcePasswordChange: true, // Enforce password change
+      });
       if (response.status === 200 || response.status === 201) {
         setOpenSnackbar(true);
 
-        // Redirect after a short delay
         setTimeout(() => {
           navigate("/dashboard");
-        }, 2000); // Delay of 2 seconds before redirect
+        }, 2000);
       } else {
         alert("Failed to register employee. Please try again.");
       }
@@ -101,8 +122,15 @@ function Registration() {
     }
   };
 
+  // Handle cancel
   const handleCancel = () => {
-    navigate("/dashboard"); // Redirect to dashboard on cancel
+    navigate("/dashboard");
+  };
+
+  const formatRole = (role) => {
+    return role
+      .replace(/([a-z])([A-Z])/g, "$1 $2") // Add space before capital letters
+      .replace(/^./, (str) => str.toUpperCase()); // Capitalize the first letter
   };
 
   return (
@@ -164,65 +192,72 @@ function Registration() {
                       onChange={(e) => handleInputChange("middleName", e.target.value)}
                     />
                   </Grid>
-
                   <Grid item xs={12} md={4}>
-                    <Select
-                      label="Department"
-                      fullWidth
-                      value={formData.dept_id}
-                      onChange={(e) => handleInputChange("dept_id", e.target.value)}
-                      displayEmpty
-                      sx={{
-                        padding: "10px",
-                        fontSize: "1rem",
-                        "& .MuiOutlinedInput-root": {
-                          borderRadius: "8px",
-                        },
-                      }}
-                    >
-                      <MenuItem value="" disabled>
-                        Select Department
-                      </MenuItem>
-                      {departments.length > 0 ? (
-                        departments.map((dept) => (
-                          <MenuItem key={dept.id} value={dept.id}>
-                            {dept.name}
-                          </MenuItem>
-                        ))
-                      ) : (
-                        <MenuItem value="">Loading...</MenuItem>
-                      )}
-                    </Select>
+                    <FormControl fullWidth variant="outlined">
+                      <InputLabel id="department-label">Department</InputLabel>
+                      <Select
+                        labelId="department-label"
+                        id="department-select"
+                        value={formData.dept_id}
+                        onChange={(e) => handleInputChange("dept_id", e.target.value)}
+                        label="Department"
+                        fullWidth
+                        sx={{
+                          padding: "10px",
+                          fontSize: "1rem",
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: "8px",
+                          },
+                        }}
+                      >
+                        <MenuItem value="" disabled>
+                          Select Department
+                        </MenuItem>
+                        {departments.length > 0 ? (
+                          departments.map((dept) => (
+                            <MenuItem key={dept.id} value={dept.id}>
+                              {dept.name}
+                            </MenuItem>
+                          ))
+                        ) : (
+                          <MenuItem value="">Loading...</MenuItem>
+                        )}
+                      </Select>
+                    </FormControl>
                   </Grid>
 
                   <Grid item xs={12} md={4}>
-                    <Select
-                      label="Position"
-                      fullWidth
-                      value={formData.position_id}
-                      onChange={(e) => handleInputChange("position_id", e.target.value)}
-                      displayEmpty
-                      sx={{
-                        padding: "10px",
-                        fontSize: "1rem",
-                        "& .MuiOutlinedInput-root": {
-                          borderRadius: "8px",
-                        },
-                      }}
-                    >
-                      <MenuItem value="" disabled>
-                        Select Position
-                      </MenuItem>
-                      {positions.length > 0 ? (
-                        positions.map((pos) => (
-                          <MenuItem key={pos.id} value={pos.id}>
-                            {pos.name}
-                          </MenuItem>
-                        ))
-                      ) : (
-                        <MenuItem value="">Select Position</MenuItem>
-                      )}
-                    </Select>
+                    <FormControl fullWidth variant="outlined">
+                      <InputLabel id="position-label">Position</InputLabel>
+                      <Select
+                        labelId="position-label"
+                        id="position-select"
+                        value={formData.position_id}
+                        onChange={(e) => handleInputChange("position_id", e.target.value)}
+                        label="Position"
+                        fullWidth
+                        sx={{
+                          padding: "10px",
+                          fontSize: "1rem",
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: "8px",
+                          },
+                        }}
+                      >
+                        <MenuItem value="" disabled>
+                          Select Position
+                        </MenuItem>
+                        {positions.length > 0 ? (
+                          positions.map((pos) => (
+                            <MenuItem key={pos.id} value={pos.id}>
+                              {pos.name}
+                            </MenuItem>
+                          ))
+                        ) : (
+                          <MenuItem value="">Loading...</MenuItem>
+                        )}
+                      </Select>
+                    </FormControl>
                   </Grid>
 
                   <Grid item xs={12} md={4}>
@@ -235,21 +270,39 @@ function Registration() {
                       onChange={(e) => handleInputChange("date_started", e.target.value)}
                     />
                   </Grid>
+
                   <Grid item xs={12} md={4}>
-                    <MDInput
-                      label="Username"
-                      fullWidth
-                      value={formData.username}
-                      onChange={(e) => handleInputChange("username", e.target.value)}
-                    />
+                    <FormControl fullWidth variant="outlined">
+                      <InputLabel id="role-label">Role</InputLabel>
+                      <Select
+                        labelId="role-label"
+                        id="role-select"
+                        value={formData.role}
+                        label="Role"
+                        onChange={(e) => handleInputChange("role", e.target.value)}
+                        fullWidth
+                        sx={{
+                          padding: "10px",
+                          fontSize: "1rem",
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: "8px",
+                          },
+                        }}
+                      >
+                        {roles.map((role) => (
+                          <MenuItem key={role} value={role}>
+                            {formatRole(role)} {/* Use the formatRole function here */}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item xs={12} md={4}>
+                    <MDInput label="Username" fullWidth value={formData.username} disabled />
                   </Grid>
                   <Grid item xs={12} md={4}>
-                    <MDInput
-                      label="Password"
-                      fullWidth
-                      value={formData.password}
-                      onChange={(e) => handleInputChange("password", e.target.value)}
-                    />
+                    <MDInput label="Password" fullWidth value={formData.password} disabled />
                   </Grid>
                 </Grid>
 
@@ -268,15 +321,11 @@ function Registration() {
       </MDBox>
       <Footer />
 
-      {/* Snackbar for success */}
       <Snackbar
         open={openSnackbar}
         autoHideDuration={6000}
         onClose={() => setOpenSnackbar(false)}
-        anchorOrigin={{
-          vertical: "top", // Position it at the top
-          horizontal: "center", // Position it at the center horizontally
-        }}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <Alert onClose={() => setOpenSnackbar(false)} severity="success" sx={{ width: "100%" }}>
           Employee is successfully registered!
