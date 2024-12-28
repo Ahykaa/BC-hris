@@ -35,4 +35,26 @@ class EmployeeController extends Controller
         ]);
     }
 
+    public function getAllRequestsForSuperAdmin()
+    {
+        try {
+            // Fetch all leaves
+            $leaves = Leave::all();
+
+            // Fetch all documents
+            $documents = Document::all();
+
+            // Return combined data
+            return response()->json([
+                'leaves' => $leaves,
+                'documents' => $documents,
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to fetch all requests',
+                'message' => $e->getMessage(),
+            ], 500);
+        }
+    }
+
 }
