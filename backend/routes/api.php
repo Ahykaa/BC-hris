@@ -73,4 +73,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route get all requests (leave & document) for super admin
     Route::get('/superAdmin/requests', [EmployeeController::class, 'getAllRequestsForSuperAdmin']);
 
+    //Route for changing the password
+    Route::post('/change-password', [UserController::class, 'changePassword']);
+
 });
