@@ -2,7 +2,7 @@
 import Divider from "@mui/material/Divider";
 import TextField from "@mui/material/TextField";
 import Icon from "@mui/material/Icon";
-import axios from "axios"; // Import axios
+import axiosInstance from "services/axiosInstance";
 
 // BCHRIS React components
 import MDBox from "components/MDBox";
@@ -29,11 +29,11 @@ function Configurator() {
     const payload = {
       current_password: formData.get("current_password"),
       new_password: formData.get("new_password"),
-      new_password_confirmation: formData.get("confirm_password"),
+      new_password_confirmation: formData.get("new_password_confirmation"),
     };
 
     try {
-      const response = await axios.post("/api/change-password", payload, {
+      const response = await axiosInstance.post("/change-password", payload, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
