@@ -306,14 +306,23 @@ function Registration() {
                   </Grid>
                 </Grid>
 
-                <MDBox mt={3} display="flex" justifyContent="flex-end" gap={2}>
-                  <MDButton color="success" onClick={handleSubmit}>
-                    Register
-                  </MDButton>
-                  <MDButton color="error" onClick={handleCancel}>
-                    Cancel
-                  </MDButton>
-                </MDBox>
+                {/* Submit and Cancel Buttons */}
+                <Grid item xs={12} md={12}>
+                  <MDBox display="flex" justifyContent="flex-end" gap={2}>
+                    <MDButton variant="outlined" color="error" onClick={handleCancel} size="small">
+                      Cancel
+                    </MDButton>
+
+                    <MDButton
+                      variant="gradient"
+                      color="success"
+                      onClick={handleSubmit}
+                      size="small"
+                    >
+                      Submit
+                    </MDButton>
+                  </MDBox>
+                </Grid>
               </MDBox>
             </Card>
           </Grid>

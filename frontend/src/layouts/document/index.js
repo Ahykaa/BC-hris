@@ -62,6 +62,9 @@ function Document() {
     setOtherDocument("");
     const currentDate = new Date().toISOString().split("T")[0];
     setDateOfRequest(currentDate);
+
+    // Redirect to the dashboard
+    navigate("/dashboard");
   };
 
   const handleSubmit = async () => {
@@ -233,17 +236,21 @@ function Document() {
                 </Grid>
 
                 {/* Submit and Cancel Buttons */}
-                <Grid container spacing={3} justifyContent="flex-end">
-                  <Grid item>
-                    <MDButton color="success" onClick={handleSubmit}>
-                      Submit
-                    </MDButton>
-                  </Grid>
-                  <Grid item>
-                    <MDButton color="error" onClick={handleCancel}>
+                <Grid item xs={12} md={12}>
+                  <MDBox display="flex" justifyContent="flex-end" gap={2}>
+                    <MDButton variant="outlined" color="error" onClick={handleCancel} size="small">
                       Cancel
                     </MDButton>
-                  </Grid>
+
+                    <MDButton
+                      variant="gradient"
+                      color="success"
+                      onClick={handleSubmit}
+                      size="small"
+                    >
+                      Submit
+                    </MDButton>
+                  </MDBox>
                 </Grid>
               </MDBox>
             </Card>
