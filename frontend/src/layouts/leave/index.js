@@ -293,20 +293,21 @@ function Leave() {
                   <Grid item xs={12} md={12}>
                     <MDBox display="flex" justifyContent="flex-end" gap={2}>
                       <MDButton
-                        variant="gradient"
-                        color="success"
-                        onClick={handleSubmit}
-                        size="small"
-                      >
-                        Submit
-                      </MDButton>
-                      <MDButton
                         variant="outlined"
                         color="error"
                         onClick={handleCancel}
                         size="small"
                       >
                         Cancel
+                      </MDButton>
+
+                      <MDButton
+                        variant="gradient"
+                        color="success"
+                        onClick={handleSubmit}
+                        size="small"
+                      >
+                        Submit
                       </MDButton>
                     </MDBox>
                   </Grid>

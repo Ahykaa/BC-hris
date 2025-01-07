@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
+import MDButton from "components/MDButton"; // Ensure this import is added
+import MDBox from "components/MDBox"; // Only keep this import
 import Card from "@mui/material/Card";
 import {
   Dialog,
@@ -18,7 +20,6 @@ import {
 import EditIcon from "@mui/icons-material/Edit"; // Edit icon for actions
 
 // BCHRIS React components
-import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
 import DataTable from "examples/Tables/DataTable";
 
@@ -232,12 +233,27 @@ function AdminCompeEmployeeList() {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)} color="primary">
-            Close
-          </Button>
-          <Button onClick={handleSave} color="primary">
-            Save
-          </Button>
+          <MDBox display="flex" justifyContent="flex-end" gap={2}>
+            {/* Close button */}
+            <MDButton
+              variant="outlined"
+              color="error"
+              onClick={() => setOpen(false)} // Close modal
+              size="small"
+            >
+              Close
+            </MDButton>
+
+            {/* Save button */}
+            <MDButton
+              variant="gradient"
+              color="success"
+              onClick={handleSave} // Save changes
+              size="small"
+            >
+              Save
+            </MDButton>
+          </MDBox>
         </DialogActions>
       </Dialog>
 
